@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app id="WebApp_ID" version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
-	<display-name>GenericAppWeb</display-name>
-	
+<web-app id="WebApp_ID" version="3.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+	<display-name>FaasWeb</display-name>
+
 	<servlet>
 		<servlet-name>MobileFrameworkDispatcher</servlet-name>
 		<servlet-class>com.ibm.app.web.frmwk.MobileFrameworkDispatcher</servlet-class>
@@ -41,6 +43,11 @@
 			<description>Authentication token attribute. To be set to a not null string after the successful authentication</description>
 			<param-name>authTokenAttribute</param-name>
 			<param-value>auth_token</param-value>
+		</init-param>
+		<init-param>
+			<description>Action path to bypass any authentication.Should be same as MobileFrameworkDispatcher's same param name </description>
+			<param-name>secureModelAction</param-name>
+			<param-value>_get_last_model_data.wss</param-value>
 		</init-param>
 	</filter>
 	<filter-mapping>

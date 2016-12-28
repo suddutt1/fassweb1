@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>FaaS Web Application</title>
+<!-- Required meta tags always come first -->
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+	<nav class="navbar navbar-dark bg-inverse navbar-full navbar-fixed-top">
+		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;FaaS Web Application</a>
+		<button class="navbar-toggler hidden-sm-up float-xs-right"
+			type="button" data-toggle="collapse" data-target="#navbar-header"
+			aria-controls="navbar-header" aria-expanded="false"
+			aria-label="Toggle navigation"></button>
+		<div class="collapse navbar-toggleable-xs" id="navbar-header">
+			<ul class="nav navbar-nav float-xs-right">
+				<li class="nav-item active"><a class="nav-link" href="#">Home</a></li>
+				<li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
+				<li class="nav-item"><a class="nav-link" href="weatherhome.wss">Administration</a>
+				</li>
+				<li class="nav-item"><a
+					class="nav-link btn btn-outline-warning">Settings</a></li>
+				<li class="nav-item"><a class="btn btn-primary"
+					href="logout.wss">Logout</a></li>
+
+			</ul>
+		</div>
+	</nav>
+	<!-- /navbar -->
+	<div class="container-fluid">
+		<div class="jumbotron" >
+			<h3 class="display-5">Claim details</h3>
+			<p class="lead">View and share claim details to shared ledger</p>
+			<div style="height:400px;" id="claimDetails"></div>
+		</div>
+		<div class="modal fade" id="saveSucessToBC" tabindex="-1" role="dialog" 
+			aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-body">
+		        <span><img src="css/tick_green.png" style="width:5%"></span>Claim is saved to shared ledger in block chain
+		      </div>
+		      <div class="modal-footer">
+		        <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<div class="modal fade" id="sendToHost" tabindex="-1" role="dialog" 
+			aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-body">
+		        <span><img src="css/tick_green.png" style="width:5%"></span>
+		        Claim is sent to Host successfully
+		      </div>
+		      <div class="modal-footer">
+		        <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	</div>
+	<!--  A hidden form to submit -->
+	<form action="loadProvideHome.wss" method="post" id="goBackFrm">
+	</form>
+	<!-- jQuery first, then Tether, then Bootstrap JS. -->
+	<script src="js/jquery-3.1.1.min.js"></script>
+	<script src="js/tether.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/mustache.js"></script>
+
+	<script src="js/apputils.js"></script>
+	<script id="claimDetailsTemplate" type="x-tmpl-mustache">
+		<div class="card col-lg-6">
+			  <div class="card-header">
+				<h4 class="card-title">				
+					Claim number {{claimId}}
+				</h4>
+			  </div>
+			  <div class="card-block">
+				<table class="table table-striped">
+				  <tbody>
+					<tr>
+					  <th scope="row">Service Date</th>
+					  <td>{{serviceDate}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Member Id</th>
+					  <td>{{memberId}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Charged Amount</th>
+					  <td>${{chargedAmount}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Procedure</th>
+					  <td>{{procedureCode}}</td>
+					</tr>
+				  </tbody>
+				</table>
+				<a href="#" data-toggle="modal" data-target="#saveSucessToBC" class="btn btn-primary">Save to Shared Ledger</a>
+				<a href="#" data-toggle="modal" data-target="#sendToHost" class="btn btn-warning">Send to host</a>
+				<a href="loadProvideHome.wss" class="btn btn-info">Cancel</a>
+			  </div>
+			</div>
+	</script>
+	<script type="text/javascript">
+		$(document).ready(
+				function() {
+					console.log('Provider claim details page loaded');
+					//Add the modal action handlers
+					$('#saveSucessToBC').on('hidden.bs.modal', function (e) {
+  						$("#goBackFrm").submit();
+					});
+					$('#sendToHost').on('hidden.bs.modal', function (e) {
+  						$("#goBackFrm").submit();
+					});
+					getLastActionResponse(function(responseObj) {
+						var resp = responseObj.actionResponse;
+						if (resp != null
+								&& resp.status == 0) {
+								var claimDetailTemplate = $("#claimDetailsTemplate").html();
+								Mustache.parse(claimDetailTemplate);
+								var claim = resp.result;
+								if(claim)
+								{
+									var claimContent = Mustache.render(claimDetailTemplate,claim);
+									$("#claimDetails").append(claimContent);
+								}
+								else
+								{
+									$("#claimDetails").html("<p>Imvalid claim number</p>");
+								}
+						}
+						console.log("Success callback");
+						//$("#claimDetails").removeClass("jumbotron");
+						//$("#claimDetails").addClass("jumbotron");
+					}, function(errorText) {
+						//$("#claimDetails").removeClass("jumbotron");
+						console.log("Error callback");
+						//$("#claimDetails").addClass("jumbotron");
+					});
+				});
+	</script>
+</body>
+</html>

@@ -37,7 +37,7 @@ public class MobileFrameworkDispatcher extends HttpServlet {
 	private static final String _SECURE_MODEL_DATA_ACTION = "secureModelAction";
 	
 	private static final Gson _SERIALIZER = new GsonBuilder()
-			.setPrettyPrinting().create();
+			.setPrettyPrinting().serializeNulls().create();
 
 	private ActionConfigurations actionConfig;
 	private String lastModelDataAction = "_get_last_model_data.wss";
@@ -120,6 +120,8 @@ public class MobileFrameworkDispatcher extends HttpServlet {
 					result = new ModelAndView(ViewType.AJAX_VIEW);
 					Object lastModel = request.getSession().getAttribute(
 							_SECURE_MODEL_DATA_ACTION);
+					//Remove after first use;
+					request.getSession().removeAttribute(_SECURE_MODEL_DATA_ACTION);
 					String lastModelString = (lastModel != null ? _SERIALIZER
 							.toJson(lastModel) : "{}");
 					result.setView(lastModelString);
