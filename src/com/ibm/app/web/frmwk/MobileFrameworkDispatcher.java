@@ -138,6 +138,8 @@ public class MobileFrameworkDispatcher extends HttpServlet {
 							new Object[] { request, response });
 				}
 				if (result != null) {
+					response.setHeader("Expires", "0");
+					response.setHeader("Pragma", "no-cache");
 					switch (result.getViewType()) {
 					case JSP_VIEW:
 						placeModelInRequestScope(result.getModelMap(), request);

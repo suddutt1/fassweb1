@@ -14,7 +14,7 @@
 </head>
 <body>
 	<nav class="navbar navbar-dark bg-inverse navbar-full navbar-fixed-top">
-		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;FaaS Web Application</a>
+		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;<span class="app-title">FaaS Web Application</span></a>
 		<button class="navbar-toggler hidden-sm-up float-xs-right"
 			type="button" data-toggle="collapse" data-target="#navbar-header"
 			aria-controls="navbar-header" aria-expanded="false"
@@ -36,24 +36,9 @@
 	<!-- /navbar -->
 	<div class="container-fluid">
 		<div class="jumbotron">
-			<h3 class="display-5">Available claims for Home Entity</h3>
-			<p class="lead">List of available claims. Please select to proceed</p>
+			<h3 class="display-5">Available claims for home entity</h3>
+			<p class="lead">List of available claims sent by host . Please select to proceed</p>
 			<div class="list-group" id="claimList">
-				<a href="#" class="list-group-item list-group-item-action list-group-item-success">
-					<h5 class="list-group-item-heading">CLAIM NO: XXXXXX</h5>
-					<p class="list-group-item-text"><span class="tag tag-primary">Date: MM-DD-YYYY</span>&nbsp; 
-					<span class="tag tag-info">AMT:$YYYY.ZZ</span></p>
-				</a> 
-				<a href="#" class="list-group-item list-group-item-action list-group-item-warning">
-					<h5 class="list-group-item-heading">CLAIM NO: XXXXXX</h5>
-					<p class="list-group-item-text"><span class="tag tag-primary">Date: MM-DD-YYYY</span>&nbsp; 
-					<span class="tag tag-info">AMT:$YYYY.ZZ</span></p>
-				</a> 
-				<a href="#" class="list-group-item list-group-item-action list-group-item-success">
-					<h5 class="list-group-item-heading">CLAIM NO: XXXXXX</h5>
-					<p class="list-group-item-text"><span class="tag tag-primary">Date: MM-DD-YYYY</span>&nbsp; 
-					<span class="tag tag-info">AMT:$YYYY.ZZ</span></p>
-				</a>
 			</div>
 
 		</div>
@@ -63,5 +48,60 @@
 	<script src="js/jquery-3.1.1.min.js"></script>
 	<script src="js/tether.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/mustache.js"></script>
+	
+	<script src="js/apputils.js"></script>
+	<script id="claimDetailsTemplate" type="x-tmpl-mustache">
+		<a id="{{claimId}}" href="viewClaimDetailsByHomeFromHost.wss?claimId={{claimId}}&seed={{time}}" 
+			class="list-group-item list-group-item-action">
+					<h5 class="list-group-item-heading">CLAIM NO: {{claimId}}</h5>
+					<p class="list-group-item-text">
+						<span class="tag tag-primary">Service Date: {{serviceDate}}</span>&nbsp; 
+						<span class="tag tag-info">Charged Amount:${{chargedAmount}}</span>
+					</p>
+		</a> 
+	</script>
+	<script type="text/javascript">
+		$(document).ready(
+				function() {
+					console.log('Home entity home page loaded');
+					
+					getLastActionResponse(function(responseObj) {
+						var resp = responseObj.actionResponse;
+						if (resp != null
+								&& resp.status == 0) {
+								var claimDetailTemplate = $("#claimDetailsTemplate").html();
+								Mustache.parse(claimDetailTemplate);
+								var claims = resp.result;
+								if(claims.length>0)
+								{
+									var time = (new Date()).getTime();
+									$.each(claims,function(index,claim){
+										claim["time"]=time;
+										var claimContent = Mustache.render(claimDetailTemplate,claim);
+										$("#claimList").append(claimContent);
+										if(index%2==0)
+										{
+											$("#"+claim.claimId).addClass("list-group-item-success");
+										}
+										else
+										{
+											$("#"+claim.claimId).addClass("list-group-item-primary");
+										}
+									});
+									
+								}
+								else
+								{
+									$("#claimList").html("<p>No claims to process</p>");
+								}
+						}
+						console.log("Success callback");
+					}, function(errorText) {
+
+						console.log("Error callback");
+					});
+				});
+	</script>
 </body>
 </html>

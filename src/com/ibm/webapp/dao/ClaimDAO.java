@@ -53,6 +53,22 @@ public class ClaimDAO {
 	}
 
 	/**
+	 * Returns the list of claims for the home entity
+	 * @return List of claims for the home entity
+	 */
+	public static List<ClaimDetails> getClaimListForHome() {
+		init();
+		List<ClaimDetails> list = new ArrayList<>();
+		for (ClaimDetails claim : _claimStore.values()) {
+			if (CLAIM_OWNER_HOME.equals(claim.getCurrentOwner())) {
+				list.add(claim);
+			}
+		}
+		return list;
+
+	}
+
+	/**
 	 * Returns the list of claims for the host
 	 * 
 	 * @return
