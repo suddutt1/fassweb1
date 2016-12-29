@@ -36,13 +36,13 @@ public class LoginAction implements WebActionHandler {
 			if ("provider".equalsIgnoreCase(role)) {
 				mvObj = new ModelAndView(ViewType.FORWARD_ACTION_VIEW);
 				mvObj.setView("loadProvideHome.wss");
+			}  else if ("host".equalsIgnoreCase(role)) {
+				mvObj = new ModelAndView(ViewType.FORWARD_ACTION_VIEW);
+				mvObj.setView("loadHostHome.wss");
 			} else if ("home".equalsIgnoreCase(role)) {
 				mvObj = new ModelAndView(ViewType.FORWARD_ACTION_VIEW);
 				mvObj.setView("loadHomeUserHome.wss");
-			} else if ("host".equalsIgnoreCase(role)) {
-				mvObj = new ModelAndView(ViewType.FORWARD_ACTION_VIEW);
-				mvObj.setView("loadHostHome.wss");
-			} else {
+			}else {
 				session.removeAttribute(APP_LOGIN_AUTH_TOKEN);
 				session.removeAttribute(APP_USER);
 				session.removeAttribute(APP_USER_ROLE);

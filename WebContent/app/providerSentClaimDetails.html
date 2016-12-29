@@ -37,7 +37,7 @@
 	<div class="container-fluid">
 		<div class="jumbotron" >
 			<h3 class="display-5">Claim details</h3>
-			<p class="lead">View and share claim details to shared ledger</p>
+			<p class="lead">Save or send claim details to home</p>
 			<div style="height:400px;" id="claimDetails"></div>
 		</div>
 		<div class="modal fade" id="saveSucessToBC" tabindex="-1" role="dialog" 
@@ -53,13 +53,13 @@
 		    </div>
 		  </div>
 		</div>
-		<div class="modal fade" id="sendToHost" tabindex="-1" role="dialog" 
+		<div class="modal fade" id="sendToHome" tabindex="-1" role="dialog" 
 			aria-labelledby="myModalLabel" aria-hidden="true">
 		  <div class="modal-dialog" role="document">
 		    <div class="modal-content">
 		      <div class="modal-body">
 		        <span><img src="css/tick_green.png" style="width:5%"></span>
-		        Claim is sent to Host successfully
+		        Claim is sent to Home successfully
 		      </div>
 		      <div class="modal-footer">
 		        <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
@@ -69,7 +69,7 @@
 		</div>
 	</div>
 	<!--  A hidden form to submit -->
-	<form action="loadProvideHome.wss" method="post" id="goBackFrm">
+	<form action="loadClaims.wss?status=PROVIDER_SENT_TO_HOST" method="post" id="goBackFrm">
 	</form>
 	<!-- jQuery first, then Tether, then Bootstrap JS. -->
 	<script src="js/jquery-3.1.1.min.js"></script>
@@ -106,9 +106,9 @@
 					</tr>
 				  </tbody>
 				</table>
-				<a href="#" data-toggle="modal" data-target="#saveSucessToBC" class="btn btn-primary">Save to Shared Ledger</a>
-				<button class="btn btn-warning" id="sendToHostBtn" onClick="updateClaim('{{claimId}}','PROVIDER_SENT_TO_HOST')" >Send to host</button>
-				<a href="loadProvideHome.wss" class="btn btn-info">Cancel</a>
+				<a href="#" data-toggle="modal" data-target="#saveSucessToBC" class="btn btn-primary">Save</a>
+				<button class="btn btn-warning" onClick="updateClaim('{{claimId}}','HOST_SENT_TO_HOME')">Send to home</button>
+				<a href="loadClaims.wss?status=PROVIDER_SENT_TO_HOST&seed={{seed}}" class="btn btn-info">Cancel</a>
 			  </div>
 			</div>
 	</script>
@@ -120,7 +120,7 @@
 					$('#saveSucessToBC').on('hidden.bs.modal', function (e) {
   						$("#goBackFrm").submit();
 					});
-					$('#sendToHost').on('hidden.bs.modal', function (e) {
+					$('#sendToHome').on('hidden.bs.modal', function (e) {
   						$("#goBackFrm").submit();
 					});
 					getLastActionResponse(function(responseObj) {
@@ -132,6 +132,7 @@
 								var claim = resp.result;
 								if(claim)
 								{
+									claim["seed"]= (new Date()).getTime();
 									var claimContent = Mustache.render(claimDetailTemplate,claim);
 									$("#claimDetails").append(claimContent);
 								}
@@ -155,14 +156,14 @@
 		{
 				$.ajax({
 					type: 'POST',
-					url:  'updateClaimStatusProvider.wss',
+					url:  'updateClaimStatusHost.wss',
 					data: { 'claimId': claimId,'status': status}
 					 })
 					.done( function (responseText) {
 					   // Triggered if response status code is 200 (OK)
 					   console.log('Response received:' + responseText);
 					   //show the success modal
-					   $('#sendToHost').modal({'show':true});
+					   $('#sendToHome').modal({'show':true});
 					})
 					.fail( function (jqXHR, status, error) {
 					   alert('Update failed');

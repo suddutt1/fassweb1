@@ -8,7 +8,10 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ibm.webapp.bean.ClaimDetails;
+import com.ibm.webapp.bean.ClaimStatus;
 import com.ibm.webapp.mockdata.MockDataHelper;
+
+import static com.ibm.webapp.action.ApplicationConstants.*;
 
 public class ClaimDAO {
 
@@ -22,6 +25,7 @@ public class ClaimDAO {
 
 	/**
 	 * Returns a claim details
+	 * 
 	 * @param claimId
 	 * @return
 	 */
@@ -33,20 +37,52 @@ public class ClaimDAO {
 
 	/**
 	 * Returns the list of claims for the provider
+	 * 
 	 * @return
 	 */
 	public static List<ClaimDetails> getClaimListForProvider() {
 		init();
 		List<ClaimDetails> list = new ArrayList<>();
-		for(ClaimDetails claim: _claimStore.values())
-		{
-			if(claim.getCurrentOwner()==null)
-			{
+		for (ClaimDetails claim : _claimStore.values()) {
+			if (claim.getCurrentOwner() == null) {
 				list.add(claim);
 			}
 		}
 		return list;
 
+	}
+
+	/**
+	 * Returns the list of claims for the host
+	 * 
+	 * @return
+	 */
+	public static List<ClaimDetails> getClaimListForHost(ClaimStatus status) {
+		init();
+		List<ClaimDetails> list = new ArrayList<>();
+		for (ClaimDetails claim : _claimStore.values()) {
+			if (CLAIM_OWNER_HOST.equals(claim.getCurrentOwner())
+					&& status.equals(claim.getStatus())) {
+				list.add(claim);
+			}
+		}
+		return list;
+
+	}
+
+	/**
+	 * Update the claim details in DB
+	 * 
+	 * @param claimDetails
+	 * @return
+	 */
+	public static boolean updateClaim(ClaimDetails claimDetails) {
+		init();
+		if (_claimStore.containsKey(claimDetails.getClaimId())) {
+			_claimStore.put(claimDetails.getClaimId(), claimDetails);
+			return true;
+		}
+		return false;
 	}
 
 	private static void loadClaimsFromMockStore() {

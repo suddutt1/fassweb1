@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>FaaS Web Application</title>
+<!-- Required meta tags always come first -->
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+	<nav class="navbar navbar-dark bg-inverse navbar-full navbar-fixed-top">
+		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;FaaS Web Application</a>
+		<button class="navbar-toggler hidden-sm-up float-xs-right"
+			type="button" data-toggle="collapse" data-target="#navbar-header"
+			aria-controls="navbar-header" aria-expanded="false"
+			aria-label="Toggle navigation"></button>
+		<div class="collapse navbar-toggleable-xs" id="navbar-header">
+			<ul class="nav navbar-nav float-xs-right">
+				<li class="nav-item active"><a class="nav-link" href="#">Home</a></li>
+				<li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
+				<li class="nav-item"><a class="nav-link" href="weatherhome.wss">Administration</a>
+				</li>
+				<li class="nav-item"><a
+					class="nav-link btn btn-outline-warning">Settings</a></li>
+				<li class="nav-item"><a class="btn btn-primary"
+					href="logout.wss">Logout</a></li>
+
+			</ul>
+		</div>
+	</nav>
+	<!-- /navbar -->
+	<div class="container-fluid">
+		<div class="jumbotron">
+			<h3 class="display-5">Claims from provider</h3>
+			<p class="lead">List of available claims. Please select to proceed</p>
+			<div class="list-group" id="claimList">
+			</div>
+			<div class="offset-xs-3 col-xs-6 offset-sm-3 col-sm-6 offset-md-3 col-md-6 offset-lg-3 col-lg-6 offset-xl-3 col-xl-6 ">
+				<a href="loadHostHome.wss" class="btn btn-warning btn-lg col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">Back</a>
+			</div>
+		</div>
+	</div>
+
+	<!-- jQuery first, then Tether, then Bootstrap JS. -->
+	<script src="js/jquery-3.1.1.min.js"></script>
+	<script src="js/tether.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/mustache.js"></script>
+	
+	<script src="js/apputils.js"></script>
+	<script id="claimDetailsTemplate" type="x-tmpl-mustache">
+		<a id="{{claimId}}" href="viewClaimDetailsByHostFromProvider.wss?claimId={{claimId}}&seed={{time}}" 
+			class="list-group-item list-group-item-action">
+					<h5 class="list-group-item-heading">CLAIM NO: {{claimId}}</h5>
+					<p class="list-group-item-text">
+						<span class="tag tag-primary">Service Date: {{serviceDate}}</span>&nbsp; 
+						<span class="tag tag-info">Charged Amount:${{chargedAmount}}</span>
+					</p>
+		</a> 
+	</script>
+	<script type="text/javascript">
+		$(document).ready(
+				function() {
+					console.log('Host claims from provider page loaded');
+					
+					getLastActionResponse(function(responseObj) {
+						var resp = responseObj.actionResponse;
+						if (resp != null
+								&& resp.status == 0) {
+								var claimDetailTemplate = $("#claimDetailsTemplate").html();
+								Mustache.parse(claimDetailTemplate);
+								var claims = resp.result;
+								if(claims.length>0)
+								{
+									var dt = new Date();
+									var randSeed = dt.getTime();
+									$.each(claims,function(index,claim){
+										claim["time"]=randSeed;
+										var claimContent = Mustache.render(claimDetailTemplate,claim);
+										$("#claimList").append(claimContent);
+										if(index%2==0)
+										{
+											$("#"+claim.claimId).addClass("list-group-item-success");
+										}
+										else
+										{
+											$("#"+claim.claimId).addClass("list-group-item-primary");
+										}
+									});
+									
+								}
+								else
+								{
+									$("#claimList").html("<p>No claims to process</p>");
+								}
+						}
+						console.log("Success callback");
+					}, function(errorText) {
+
+						console.log("Error callback");
+					});
+				});
+	</script>
+</body>
+</html>

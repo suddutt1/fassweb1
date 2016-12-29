@@ -10,4 +10,7 @@ public interface ApplicationConstants {
 	int ACTION_ERROR = 1;
 	int ACTION_EXCEPTION = 2;
 	int ACTION_INVALID_INPUT =3;
+	String CLAIM_OWNER_HOST="HOST";
+	String CLAIM_OWNER_HOME="HOME";
+	String CLAIM_OWNER_CFA="CFA";
 }
