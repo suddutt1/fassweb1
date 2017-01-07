@@ -1,18 +1,36 @@
 package com.ibm.webapp.bean;
 
+import org.bson.Document;
+
+import com.ibm.utils.MongoSerializable;
+
 /**
  * Holds the claim details
  * @author SUDDUTT1
  *
  */
-public class ClaimDetails {
+@SuppressWarnings("serial")
+public class ClaimDetails extends MongoSerializable{
+	
 	private String claimId;
 	private String serviceDate;
+	private String admissionDate;
 	private String providerId;
 	private String memberId;
 	private String subscriberId;
+	private String diagCode;
 	private String procedureCode;
+	private String procedureDate;
+	private String billCode;
+	private String srvcUnitNbr;
+	private String revenueCode;
+	private String revenueDesc;
+	private String admsnHourCode;
+	private String admsnTypeCode;
+	private String admsnSrvcCode;
+	private String unitOfService;
 	private String chargedAmount;
+	private String nonCovAmount;
 	private String approvedAmount;
 	private String localPlanCode;
 	private String remotePlanCode;
@@ -21,6 +39,8 @@ public class ClaimDetails {
 	private String owner;
 	private String finalApprovedAmount;
 	private String paymentMethod;
+
+	//------Following attributes are for tracking purpose
 	private String currentOwner;
 	private ClaimStatus status;
 	
@@ -31,245 +51,269 @@ public class ClaimDetails {
 	{
 		super();
 	}
-
-	/**
-	 * @return the claimId
-	 */
-	public String getClaimId() {
-		return claimId;
+	public String getClaimId(){
+		return (String)get("claimId");
 	}
-
-	/**
-	 * @param claimId the claimId to set
-	 */
-	public void setClaimId(String claimId) {
-		this.claimId = claimId;
+	public String getServiceDate(){
+		return (String)get("serviceDate");
 	}
-
-	/**
-	 * @return the serviceDate
-	 */
-	public String getServiceDate() {
-		return serviceDate;
+	public String getAdmissionDate(){
+		return (String)get("admissionDate");
 	}
-
-	/**
-	 * @param serviceDate the serviceDate to set
-	 */
-	public void setServiceDate(String serviceDate) {
-		this.serviceDate = serviceDate;
+	public String getProviderId(){
+		return (String)get("providerId");
 	}
-
-	/**
-	 * @return the providerId
-	 */
-	public String getProviderId() {
-		return providerId;
+	public String getMemberId(){
+		return (String)get("memberId");
 	}
-
-	/**
-	 * @param providerId the providerId to set
-	 */
-	public void setProviderId(String providerId) {
-		this.providerId = providerId;
+	public String getSubscriberId(){
+		return (String)get("subscriberId");
 	}
-
-	/**
-	 * @return the memberId
-	 */
-	public String getMemberId() {
-		return memberId;
+	public String getDiagCode(){
+		return (String)get("diagCode");
 	}
-
-	/**
-	 * @param memberId the memberId to set
-	 */
-	public void setMemberId(String memberId) {
-		this.memberId = memberId;
+	public String getProcedureCode(){
+		return (String)get("procedureCode");
 	}
-
-	/**
-	 * @return the subscriberId
-	 */
-	public String getSubscriberId() {
-		return subscriberId;
+	public String getProcedureDate(){
+		return (String)get("procedureDate");
 	}
-
-	/**
-	 * @param subscriberId the subscriberId to set
-	 */
-	public void setSubscriberId(String subscriberId) {
-		this.subscriberId = subscriberId;
+	public String getBillCode(){
+		return (String)get("billCode");
 	}
-
-	/**
-	 * @return the procedureCode
-	 */
-	public String getProcedureCode() {
-		return procedureCode;
+	public String getSrvcUnitNbr(){
+		return (String)get("srvcUnitNbr");
 	}
-
-	/**
-	 * @param procedureCode the procedureCode to set
-	 */
-	public void setProcedureCode(String procedureCode) {
-		this.procedureCode = procedureCode;
+	public String getRevenueCode(){
+		return (String)get("revenueCode");
 	}
-
-	/**
-	 * @return the chargedAmount
-	 */
-	public String getChargedAmount() {
-		return chargedAmount;
+	public String getRevenueDesc(){
+		return (String)get("revenueDesc");
 	}
-
-	/**
-	 * @param chargedAmount the chargedAmount to set
-	 */
-	public void setChargedAmount(String chargedAmount) {
-		this.chargedAmount = chargedAmount;
+	public String getAdmsnHourCode(){
+		return (String)get("admsnHourCode");
 	}
-
-	/**
-	 * @return the approvedAmount
-	 */
-	public String getApprovedAmount() {
-		return approvedAmount;
+	public String getAdmsnTypeCode(){
+		return (String)get("admsnTypeCode");
 	}
-
-	/**
-	 * @param approvedAmount the approvedAmount to set
-	 */
-	public void setApprovedAmount(String approvedAmount) {
-		this.approvedAmount = approvedAmount;
+	public String getAdmsnSrvcCode(){
+		return (String)get("admsnSrvcCode");
 	}
-
-	/**
-	 * @return the localPlanCode
-	 */
-	public String getLocalPlanCode() {
-		return localPlanCode;
+	public String getUnitOfService(){
+		return (String)get("unitOfService");
 	}
-
-	/**
-	 * @param localPlanCode the localPlanCode to set
-	 */
-	public void setLocalPlanCode(String localPlanCode) {
-		this.localPlanCode = localPlanCode;
+	public String getChargedAmount(){
+		return (String)get("chargedAmount");
 	}
-
-	/**
-	 * @return the remotePlanCode
-	 */
-	public String getRemotePlanCode() {
-		return remotePlanCode;
+	public String getNonCovAmount(){
+		return (String)get("nonCovAmount");
 	}
-
-	/**
-	 * @param remotePlanCode the remotePlanCode to set
-	 */
-	public void setRemotePlanCode(String remotePlanCode) {
-		this.remotePlanCode = remotePlanCode;
+	public String getApprovedAmount(){
+		return (String)get("approvedAmount");
 	}
-
-	/**
-	 * @return the costShare
-	 */
-	public String getCostShare() {
-		return costShare;
+	public String getLocalPlanCode(){
+		return (String)get("localPlanCode");
 	}
-
-	/**
-	 * @param costShare the costShare to set
-	 */
-	public void setCostShare(String costShare) {
-		this.costShare = costShare;
+	public String getRemotePlanCode(){
+		return (String)get("remotePlanCode");
 	}
-
-	/**
-	 * @return the adjustmentFlag
-	 */
-	public String getAdjustmentFlag() {
-		return adjustmentFlag;
+	public String getCostShare(){
+		return (String)get("costShare");
 	}
-
-	/**
-	 * @param adjustmentFlag the adjustmentFlag to set
-	 */
-	public void setAdjustmentFlag(String adjustmentFlag) {
-		this.adjustmentFlag = adjustmentFlag;
+	public String getAdjustmentFlag(){
+		return (String)get("adjustmentFlag");
 	}
-
-	/**
-	 * @return the owner
-	 */
-	public String getOwner() {
-		return owner;
+	public String getOwner(){
+		return (String)get("owner");
 	}
-
-	/**
-	 * @param owner the owner to set
-	 */
-	public void setOwner(String owner) {
-		this.owner = owner;
+	public String getFinalApprovedAmount(){
+		return (String)get("finalApprovedAmount");
 	}
-
-	/**
-	 * @return the finalApprovedAmount
-	 */
-	public String getFinalApprovedAmount() {
-		return finalApprovedAmount;
+	public String getPaymentMethod(){
+		return (String)get("paymentMethod");
 	}
-
-	/**
-	 * @param finalApprovedAmount the finalApprovedAmount to set
-	 */
-	public void setFinalApprovedAmount(String finalApprovedAmount) {
-		this.finalApprovedAmount = finalApprovedAmount;
+	public String getCurrentOwner(){
+		return (String)get("currentOwner");
 	}
-
-	/**
-	 * @return the paymentMethod
-	 */
-	public String getPaymentMethod() {
-		return paymentMethod;
+	public ClaimStatus getStatus(){
+		return ClaimStatus.valueOf((String)get("status"));
 	}
-
-	/**
-	 * @param paymentMethod the paymentMethod to set
-	 */
-	public void setPaymentMethod(String paymentMethod) {
-		this.paymentMethod = paymentMethod;
+	public void setClaimId(String claimId){
+		this.claimId=claimId;
+		put("claimId",claimId);
 	}
-
-	/**
-	 * @return the currentOwner
-	 */
-	public String getCurrentOwner() {
-		return currentOwner;
+	public void setServiceDate(String serviceDate){
+		this.serviceDate=serviceDate;
+		put("serviceDate",serviceDate);
 	}
-
-	/**
-	 * @param currentOwner the currentOwner to set
-	 */
-	public void setCurrentOwner(String currentOwner) {
-		this.currentOwner = currentOwner;
+	public void setAdmissionDate(String admissionDate){
+		this.admissionDate=admissionDate;
+		put("admissionDate",admissionDate);
 	}
-
-	/**
-	 * @return the status
-	 */
-	public ClaimStatus getStatus() {
-		return status;
+	public void setProviderId(String providerId){
+		this.providerId=providerId;
+		put("providerId",providerId);
 	}
-
-	/**
-	 * @param status the status to set
-	 */
-	public void setStatus(ClaimStatus status) {
-		this.status = status;
+	public void setMemberId(String memberId){
+		this.memberId=memberId;
+		put("memberId",memberId);
+	}
+	public void setSubscriberId(String subscriberId){
+		this.subscriberId=subscriberId;
+		put("subscriberId",subscriberId);
+	}
+	public void setDiagCode(String diagCode){
+		this.diagCode=diagCode;
+		put("diagCode",diagCode);
+	}
+	public void setProcedureCode(String procedureCode){
+		this.procedureCode=procedureCode;
+		put("procedureCode",procedureCode);
+	}
+	public void setProcedureDate(String procedureDate){
+		this.procedureDate=procedureDate;
+		put("procedureDate",procedureDate);
+	}
+	public void setBillCode(String billCode){
+		this.billCode=billCode;
+		put("billCode",billCode);
+	}
+	public void setSrvcUnitNbr(String srvcUnitNbr){
+		this.srvcUnitNbr=srvcUnitNbr;
+		put("srvcUnitNbr",srvcUnitNbr);
+	}
+	public void setRevenueCode(String revenueCode){
+		this.revenueCode=revenueCode;
+		put("revenueCode",revenueCode);
+	}
+	public void setRevenueDesc(String revenueDesc){
+		this.revenueDesc=revenueDesc;
+		put("revenueDesc",revenueDesc);
+	}
+	public void setAdmsnHourCode(String admsnHourCode){
+		this.admsnHourCode=admsnHourCode;
+		put("admsnHourCode",admsnHourCode);
+	}
+	public void setAdmsnTypeCode(String admsnTypeCode){
+		this.admsnTypeCode=admsnTypeCode;
+		put("admsnTypeCode",admsnTypeCode);
+	}
+	public void setAdmsnSrvcCode(String admsnSrvcCode){
+		this.admsnSrvcCode=admsnSrvcCode;
+		put("admsnSrvcCode",admsnSrvcCode);
+	}
+	public void setUnitOfService(String unitOfService){
+		this.unitOfService=unitOfService;
+		put("unitOfService",unitOfService);
+	}
+	public void setChargedAmount(String chargedAmount){
+		this.chargedAmount=chargedAmount;
+		put("chargedAmount",chargedAmount);
+	}
+	public void setNonCovAmount(String nonCovAmount){
+		this.nonCovAmount=nonCovAmount;
+		put("nonCovAmount",nonCovAmount);
+	}
+	public void setApprovedAmount(String approvedAmount){
+		this.approvedAmount=approvedAmount;
+		put("approvedAmount",approvedAmount);
+	}
+	public void setLocalPlanCode(String localPlanCode){
+		this.localPlanCode=localPlanCode;
+		put("localPlanCode",localPlanCode);
+	}
+	public void setRemotePlanCode(String remotePlanCode){
+		this.remotePlanCode=remotePlanCode;
+		put("remotePlanCode",remotePlanCode);
+	}
+	public void setCostShare(String costShare){
+		this.costShare=costShare;
+		put("costShare",costShare);
+	}
+	public void setAdjustmentFlag(String adjustmentFlag){
+		this.adjustmentFlag=adjustmentFlag;
+		put("adjustmentFlag",adjustmentFlag);
+	}
+	public void setOwner(String owner){
+		this.owner=owner;
+		put("owner",owner);
+	}
+	public void setFinalApprovedAmount(String finalApprovedAmount){
+		this.finalApprovedAmount=finalApprovedAmount;
+		put("finalApprovedAmount",finalApprovedAmount);
+	}
+	public void setPaymentMethod(String paymentMethod){
+		this.paymentMethod=paymentMethod;
+		put("paymentMethod",paymentMethod);
+	}
+	public void setCurrentOwner(String currentOwner){
+		this.currentOwner=currentOwner;
+		put("currentOwner",currentOwner);
+	}
+	public void setStatus(ClaimStatus status){
+		this.status=status;
+		put("status",status.toString());
 	}
 	
+	public void buildInstance(Document doc){
+		
+		setInternalFields(doc);
+		this.claimId=(String)doc.get("claimId");
+		this.serviceDate=(String)doc.get("serviceDate");
+		this.admissionDate=(String)doc.get("admissionDate");
+		this.providerId=(String)doc.get("providerId");
+		this.memberId=(String)doc.get("memberId");
+		this.subscriberId=(String)doc.get("subscriberId");
+		this.diagCode=(String)doc.get("diagCode");
+		this.procedureCode=(String)doc.get("procedureCode");
+		this.procedureDate=(String)doc.get("procedureDate");
+		this.billCode=(String)doc.get("billCode");
+		this.srvcUnitNbr=(String)doc.get("srvcUnitNbr");
+		this.revenueCode=(String)doc.get("revenueCode");
+		this.revenueDesc=(String)doc.get("revenueDesc");
+		this.admsnHourCode=(String)doc.get("admsnHourCode");
+		this.admsnTypeCode=(String)doc.get("admsnTypeCode");
+		this.admsnSrvcCode=(String)doc.get("admsnSrvcCode");
+		this.unitOfService=(String)doc.get("unitOfService");
+		this.chargedAmount=(String)doc.get("chargedAmount");
+		this.nonCovAmount=(String)doc.get("nonCovAmount");
+		this.approvedAmount=(String)doc.get("approvedAmount");
+		this.localPlanCode=(String)doc.get("localPlanCode");
+		this.remotePlanCode=(String)doc.get("remotePlanCode");
+		this.costShare=(String)doc.get("costShare");
+		this.adjustmentFlag=(String)doc.get("adjustmentFlag");
+		this.owner=(String)doc.get("owner");
+		this.finalApprovedAmount=(String)doc.get("finalApprovedAmount");
+		this.paymentMethod=(String)doc.get("paymentMethod");
+		this.currentOwner=(String)doc.get("currentOwner");
+		this.status=ClaimStatus.valueOf((String)doc.get("status"));
+		
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ClaimDetails [claimId=" + claimId + ", serviceDate="
+				+ serviceDate + ", admissionDate=" + admissionDate
+				+ ", providerId=" + providerId + ", memberId=" + memberId
+				+ ", subscriberId=" + subscriberId + ", diagCode=" + diagCode
+				+ ", procedureCode=" + procedureCode + ", procedureDate="
+				+ procedureDate + ", billCode=" + billCode + ", srvcUnitNbr="
+				+ srvcUnitNbr + ", revenueCode=" + revenueCode
+				+ ", revenueDesc=" + revenueDesc + ", admsnHourCode="
+				+ admsnHourCode + ", admsnTypeCode=" + admsnTypeCode
+				+ ", admsnSrvcCode=" + admsnSrvcCode + ", unitOfService="
+				+ unitOfService + ", chargedAmount=" + chargedAmount
+				+ ", nonCovAmount=" + nonCovAmount + ", approvedAmount="
+				+ approvedAmount + ", localPlanCode=" + localPlanCode
+				+ ", remotePlanCode=" + remotePlanCode + ", costShare="
+				+ costShare + ", adjustmentFlag=" + adjustmentFlag + ", owner="
+				+ owner + ", finalApprovedAmount=" + finalApprovedAmount
+				+ ", paymentMethod=" + paymentMethod + ", currentOwner="
+				+ currentOwner + ", status=" + status + "]";
+	}
+
 	
 	
 }
