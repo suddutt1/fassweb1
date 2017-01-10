@@ -39,7 +39,7 @@ public class ClaimDetails extends MongoSerializable{
 	private String owner;
 	private String finalApprovedAmount;
 	private String paymentMethod;
-
+	private String bcClaimStatus;
 	//------Following attributes are for tracking purpose
 	private String currentOwner;
 	private ClaimStatus status;
@@ -137,6 +137,13 @@ public class ClaimDetails extends MongoSerializable{
 	}
 	public ClaimStatus getStatus(){
 		return ClaimStatus.valueOf((String)get("status"));
+	}
+	/**
+	 * @return the bcClaimStatus
+	 */
+	public String getBcClaimStatus() {
+		return (String)get("bcClaimStatus");
+		
 	}
 	public void setClaimId(String claimId){
 		this.claimId=claimId;
@@ -255,6 +262,14 @@ public class ClaimDetails extends MongoSerializable{
 		put("status",status.toString());
 	}
 	
+	/**
+	 * @param bcClaimStatus the bcClaimStatus to set
+	 */
+	public void setBcClaimStatus(String bcClaimStatus) {
+		this.bcClaimStatus = bcClaimStatus;
+		put("bcClaimStatus",bcClaimStatus);
+	}
+
 	public void buildInstance(Document doc){
 		
 		setInternalFields(doc);
@@ -287,7 +302,7 @@ public class ClaimDetails extends MongoSerializable{
 		this.paymentMethod=(String)doc.get("paymentMethod");
 		this.currentOwner=(String)doc.get("currentOwner");
 		this.status=ClaimStatus.valueOf((String)doc.get("status"));
-		
+		this.bcClaimStatus=(String)doc.get("bcClaimStatus");
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -311,9 +326,9 @@ public class ClaimDetails extends MongoSerializable{
 				+ costShare + ", adjustmentFlag=" + adjustmentFlag + ", owner="
 				+ owner + ", finalApprovedAmount=" + finalApprovedAmount
 				+ ", paymentMethod=" + paymentMethod + ", currentOwner="
-				+ currentOwner + ", status=" + status + "]";
+				+ currentOwner + ", status=" + status +", + bcClaimStatus= "+ bcClaimStatus+"]";
 	}
-
+	
 	
 	
 }

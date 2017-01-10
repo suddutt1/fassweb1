@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>FaaS Web Application</title>
+<title>FAAS APP</title>
 <!-- Required meta tags always come first -->
 <meta charset="utf-8">
 <meta name="viewport"
@@ -14,7 +14,7 @@
 </head>
 <body>
 	<nav class="navbar navbar-dark bg-inverse navbar-full navbar-fixed-top">
-		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;<span class="app-title">FaaS Web Application</span></a>
+		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;<span class="app-title">FAAS APP</span></a>
 		<button class="navbar-toggler hidden-sm-up float-xs-right"
 			type="button" data-toggle="collapse" data-target="#navbar-header"
 			aria-controls="navbar-header" aria-expanded="false"
@@ -87,24 +87,80 @@
 			  </div>
 			  <div class="card-block">
 				<table class="table table-striped">
-				  <tbody>
+				<tbody>
+					<tr>
+					  <th scope="row">Claim Id</th>
+					  <td>{{claimId}}</td>
+					</tr>
 					<tr>
 					  <th scope="row">Service Date</th>
 					  <td>{{serviceDate}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Admission Date</th>
+					  <td>{{admissionDate}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Provider Id</th>
+					  <td>{{providerId}}</td>
 					</tr>
 					<tr>
 					  <th scope="row">Member Id</th>
 					  <td>{{memberId}}</td>
 					</tr>
 					<tr>
-					  <th scope="row">Charged Amount</th>
-					  <td>${{chargedAmount}}</td>
+					  <th scope="row">Subscriber Id</th>
+					  <td>{{subscriberId}}</td>
 					</tr>
 					<tr>
-					  <th scope="row">Procedure</th>
+					  <th scope="row">Diag Code</th>
+					  <td>{{diagCode}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Procedure Code</th>
 					  <td>{{procedureCode}}</td>
 					</tr>
-				  </tbody>
+					<tr>
+					  <th scope="row">Procedure Date</th>
+					  <td>{{procedureDate}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Bill Code</th>
+					  <td>{{billCode}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Srvc Unit Nbr</th>
+					  <td>{{srvcUnitNbr}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Revenue Code</th>
+					  <td>{{revenueCode}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Revenue Desc</th>
+					  <td>{{revenueDesc}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Admsn Hour Code</th>
+					  <td>{{admsnHourCode}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Admsn Type Code</th>
+					  <td>{{admsnTypeCode}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Admsn Srvc Code</th>
+					  <td>{{admsnSrvcCode}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Unit Of Service</th>
+					  <td>{{unitOfService}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Charged Amount</th>
+					  <td>{{chargedAmount}}</td>
+					</tr>
+				</tbody>
 				</table>
 				<a href="#" data-toggle="modal" data-target="#saveSucessToBC" class="btn btn-primary">Save</a>
 				<button class="btn btn-warning" onClick="updateClaim('{{claimId}}','HOST_SENT_TO_HOME')">Send to home</button>
@@ -138,7 +194,7 @@
 								}
 								else
 								{
-									$("#claimDetails").html("<p>Imvalid claim number</p>");
+									$("#claimDetails").html("<p>Invalid claim number</p>");
 								}
 						}
 						console.log("Success callback");

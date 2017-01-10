@@ -73,6 +73,11 @@
 			<param-name>MONGO_PROP</param-name>
 			<param-value>/WEB-INF/mongodb.properties</param-value>
 		</init-param>
+		<init-param>
+			<description>Properties related to application</description>
+			<param-name>APP_PROPS</param-name>
+			<param-value>/WEB-INF/application.properties</param-value>
+		</init-param>
 		<load-on-startup>0</load-on-startup>
 	</servlet>
 	<servlet-mapping>

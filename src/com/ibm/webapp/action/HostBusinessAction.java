@@ -5,14 +5,18 @@ import static com.ibm.webapp.action.ApplicationConstants.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.ibm.app.web.frmwk.WebActionHandler;
 import com.ibm.app.web.frmwk.annotations.RequestMapping;
 import com.ibm.app.web.frmwk.bean.ModelAndView;
 import com.ibm.app.web.frmwk.bean.ViewType;
+import com.ibm.hyperledger.client.HyperLedgerResponse;
 import com.ibm.utils.CommonUtil;
 import com.ibm.webapp.bean.ClaimDetails;
 import com.ibm.webapp.bean.ClaimStatus;
 import com.ibm.webapp.dao.ClaimDAO;
+import com.ibm.webapp.hldao.ClaimHLDAO;
 
 
 /**
@@ -23,6 +27,7 @@ import com.ibm.webapp.dao.ClaimDAO;
  */
 public class HostBusinessAction implements WebActionHandler {
 
+	private static final Gson _GSON_DESERIALIZER = new GsonBuilder().create();
 	@RequestMapping("loadHostHome.wss")
 	public ModelAndView loadHostHome(HttpServletRequest request,HttpServletResponse response)
 	{
@@ -44,6 +49,7 @@ public class HostBusinessAction implements WebActionHandler {
 			mvObject.setView("app/hostClaimListFromProvider.html");
 			mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
 				ACTION_SUCESS, ClaimDAO.getClaimListForHost(statusToView)));
+			
 		}
 		else if(statusToView == ClaimStatus.HOME_SENT_TO_HOST)
 		{
@@ -93,7 +99,16 @@ public class HostBusinessAction implements WebActionHandler {
 				actionResponse = new ActionResponse(ACTION_ERROR,
 						"Claim could not be sent");
 			} else {
-				actionResponse = new ActionResponse(ACTION_SUCESS, claimDetails);
+				//call the HL_DAO Here
+				HyperLedgerResponse resp = ClaimHLDAO.sendClaimToHome(claimDetails.getClaimId());
+				if(resp.isOk())
+				{
+					actionResponse = new ActionResponse(ACTION_SUCESS, claimDetails);
+				}
+				else
+				{
+					actionResponse = new ActionResponse(ACTION_ERROR, claimDetails);
+				}
 			}
 		} else {
 			actionResponse = new ActionResponse(ACTION_INVALID_INPUT,
@@ -104,6 +119,14 @@ public class HostBusinessAction implements WebActionHandler {
 	}
 	
 	private ClaimDetails getClaimDetails(String claimid) {
+		//Read from BlockChain
+		HyperLedgerResponse resp = ClaimHLDAO.getClaimDetailsForHost(claimid);
+		if(resp.isOk())
+		{
+			ClaimDetails claimDetails = _GSON_DESERIALIZER.fromJson(resp.getMessage(), ClaimDetails.class);
+			claimDetails.setAdmsnTypeCode(claimDetails.getAdmsnTypeCode()+".");
+			return claimDetails;
+		}
 		return ClaimDAO.getClaimDetailsForProvider(claimid);
 	}
 }
