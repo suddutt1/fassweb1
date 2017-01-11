@@ -70,8 +70,50 @@ public class ClaimHLDAO {
 			HyperledgerClient client = getClient(CLAIM_OWNER_HOST);
 			if (client.register()) {
 				HyperLedgerRequest claimRequest = createTransferRequest(
+						claimId, getUserId(CLAIM_OWNER_HOME),
+						"transfer_to_home",getUserId(CLAIM_OWNER_HOST));
+				response = client.invokeMethod(claimRequest);
+			} else {
+				response = new HyperLedgerResponse(false);
+				response.setMessage("Registration failed");
+			}
+		} catch (Exception ex) {
+			_LOGGER.log(Level.WARNING, "HL initiaClaimProcess failed with ", ex);
+			response = new HyperLedgerResponse(false);
+			response.setMessage("Exception in initializing the claim process:"
+					+ ex.getMessage());
+		}
+		return response;
+	}
+	public static HyperLedgerResponse sendClaimToHost(String claimId) {
+		HyperLedgerResponse response = null;
+		try {
+			HyperledgerClient client = getClient(CLAIM_OWNER_PROVIER);
+			if (client.register()) {
+				HyperLedgerRequest claimRequest = createTransferRequest(
 						claimId, getUserId(CLAIM_OWNER_HOST),
-						"transfer_to_host");
+						"transfer_to_host",getUserId(CLAIM_OWNER_PROVIER));
+				response = client.invokeMethod(claimRequest);
+			} else {
+				response = new HyperLedgerResponse(false);
+				response.setMessage("Registration failed");
+			}
+		} catch (Exception ex) {
+			_LOGGER.log(Level.WARNING, "HL initiaClaimProcess failed with ", ex);
+			response = new HyperLedgerResponse(false);
+			response.setMessage("Exception in initializing the claim process:"
+					+ ex.getMessage());
+		}
+		return response;
+	}
+	public static HyperLedgerResponse sendClaimToHostByHome(String claimId) {
+		HyperLedgerResponse response = null;
+		try {
+			HyperledgerClient client = getClient(CLAIM_OWNER_HOME);
+			if (client.register()) {
+				HyperLedgerRequest claimRequest = createTransferRequest(
+						claimId, getUserId(CLAIM_OWNER_HOST),
+						"transfer_to_hostByHome",getUserId(CLAIM_OWNER_HOME));
 				response = client.invokeMethod(claimRequest);
 			} else {
 				response = new HyperLedgerResponse(false);
@@ -87,13 +129,13 @@ public class ClaimHLDAO {
 	}
 
 	private static HyperLedgerRequest createTransferRequest(String claimId,
-			String userId, String functionName) {
+			String userId, String functionName,String context) {
 		HyperLedgerRequest request = new HyperLedgerRequest();
 		request.setMethod("invoke");
 		request.setChainCodeName(_chainCode);
 		request.setCallFunction(functionName);
 		request.setFunctionArgs(new String[] { userId, claimId });
-		request.setSecureContext(userId);
+		request.setSecureContext(context);
 		return request;
 	}
 

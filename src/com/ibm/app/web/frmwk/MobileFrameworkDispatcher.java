@@ -125,7 +125,7 @@ public class MobileFrameworkDispatcher extends HttpServlet {
 					String lastModelString = (lastModel != null ? _SERIALIZER
 							.toJson(lastModel) : "{}");
 					result.setView(lastModelString);
-					LOGGER.info("|MOBILE_FRMWK_DISPATCHER|Returning the last model for GENERIC_NO_RENDER_VIEW "
+					LOGGER.fine("|MOBILE_FRMWK_DISPATCHER|Returning the last model for GENERIC_NO_RENDER_VIEW "
 							+ lastModelString);
 				} else {
 					// Invoke action

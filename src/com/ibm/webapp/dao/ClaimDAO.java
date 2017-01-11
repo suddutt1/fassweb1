@@ -24,7 +24,7 @@ import com.mongodb.client.result.UpdateResult;
 
 public class ClaimDAO {
 
-	private static final String _RECORD_COLLECTION_NAME = "temp2";
+	private static final String _RECORD_COLLECTION_NAME = "temp3";
 	private static final Logger _LOGGER = Logger.getLogger(ClaimDAO.class
 			.getName());
 

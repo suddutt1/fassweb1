@@ -56,6 +56,39 @@ public class ProviderBusinessAction implements WebActionHandler {
 	 * @param response
 	 * @return Ajax response
 	 */
+	@RequestMapping("saveClaimToHyperLedger.wss")
+	public ModelAndView saveClaimToHyperLedger(HttpServletRequest request,
+			HttpServletResponse response) {
+		ModelAndView mvObject = new ModelAndView(ViewType.AJAX_VIEW);
+		ActionResponse actionResponse = null;
+		String claimId = request.getParameter("claimId");
+		ClaimDetails claimDetails = getClaimDetails(claimId);
+		if (claimDetails != null) {
+			HyperLedgerResponse resp = ClaimHLDAO
+					.initiaClaimProcess(claimDetails);
+			if (resp.isOk()) {
+				claimDetails.setStatus(ClaimStatus.SAVED_TO_BLOCK_CHAIN);
+				ClaimDAO.updateClaim(claimDetails);
+				actionResponse = new ActionResponse(ACTION_SUCESS, claimDetails);
+			} else {
+				actionResponse = new ActionResponse(ACTION_ERROR,
+						"Hyperledger entry could not be intiated");
+			}
+		} else {
+			actionResponse = new ActionResponse(ACTION_INVALID_INPUT,
+					"Invalid claim numebr/claim not found");
+		}
+		mvObject.setView(CommonUtil.toJson(actionResponse));
+		return mvObject;
+	}
+
+	/**
+	 * Claim update action by a provider. This is an ajax call
+	 * 
+	 * @param request
+	 * @param response
+	 * @return Ajax response
+	 */
 	@RequestMapping("updateClaimStatusProvider.wss")
 	public ModelAndView updateClaimStatus(HttpServletRequest request,
 			HttpServletResponse response) {
@@ -67,28 +100,26 @@ public class ProviderBusinessAction implements WebActionHandler {
 		ClaimDetails claimDetails = getClaimDetails(claimId);
 		if (claimDetails != null) {
 			claimDetails.setStatus(status);
-			claimDetails.setCurrentOwner(CLAIM_OWNER_HOST); 
+			claimDetails.setCurrentOwner(CLAIM_OWNER_HOST);
 			if (!ClaimDAO.updateClaim(claimDetails)) {
-				
+
 				actionResponse = new ActionResponse(ACTION_ERROR,
 						"Claim could not be sent to Host");
 			} else {
-				HyperLedgerResponse resp = ClaimHLDAO.initiaClaimProcess(claimDetails);
-				
-				if(resp.isOk())
-				{
-					actionResponse = new ActionResponse(ACTION_SUCESS, claimDetails);
-				}
-				else
-				{	
+				HyperLedgerResponse resp = ClaimHLDAO
+						.sendClaimToHome(claimDetails.getClaimId());
+				if (resp.isOk()) {
+					actionResponse = new ActionResponse(ACTION_SUCESS,
+							claimDetails);
+				} else {
 					claimDetails.setStatus(ClaimStatus.ERROR_INIITIATOR);
-					claimDetails.setCurrentOwner(CLAIM_OWNER_PROVIER); 
-					//FALL BACK
+					claimDetails.setCurrentOwner(CLAIM_OWNER_PROVIER);
+					// FALL BACK
 					ClaimDAO.updateClaim(claimDetails);
 					actionResponse = new ActionResponse(ACTION_ERROR,
-							"Hyperledger entry could not be intiated");
+							"Claim could not be sent to host");
 				}
-				
+
 			}
 		} else {
 			actionResponse = new ActionResponse(ACTION_INVALID_INPUT,

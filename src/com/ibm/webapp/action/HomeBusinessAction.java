@@ -31,16 +31,19 @@ import com.ibm.webapp.hldao.ClaimHLDAO;
 public class HomeBusinessAction implements WebActionHandler {
 
 	private static final Gson _GSON_DESERIALIZER = new GsonBuilder().create();
-	
+
 	@RequestMapping("loadHomeUserHome.wss")
 	public ModelAndView loadHomeUserHome(HttpServletRequest request,
 			HttpServletResponse response) {
-		ModelAndView mvObject = new ModelAndView(ViewType.GENERIC_NO_RENDER_VIEW, "text/html");
+		ModelAndView mvObject = new ModelAndView(
+				ViewType.GENERIC_NO_RENDER_VIEW, "text/html");
 		mvObject.setView("app/homeUser.html");
-		mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(ACTION_SUCESS,ClaimDAO.getClaimListForHome()));
+		mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
+				ACTION_SUCESS, ClaimDAO.getClaimListForHome()));
 		return mvObject;
 
 	}
+
 	/**
 	 * Claim update action by a provider. This is an ajax call
 	 * 
@@ -60,13 +63,21 @@ public class HomeBusinessAction implements WebActionHandler {
 		ClaimDetails claimDetails = getClaimDetails(claimId);
 		if (claimDetails != null && isValidAmount(finalApvlAmt)) {
 			claimDetails.setStatus(status);
-			claimDetails.setCurrentOwner(CLAIM_OWNER_HOST); 
+			claimDetails.setCurrentOwner(CLAIM_OWNER_HOST);
 			claimDetails.setFinalApprovedAmount(finalApvlAmt.trim());
 			if (!ClaimDAO.updateClaim(claimDetails)) {
 				actionResponse = new ActionResponse(ACTION_ERROR,
 						"Claim could not be sent to Host");
 			} else {
-				actionResponse = new ActionResponse(ACTION_SUCESS, claimDetails);
+				HyperLedgerResponse resp = ClaimHLDAO
+						.sendClaimToHostByHome(claimId);
+				if (resp.isOk()) {
+					actionResponse = new ActionResponse(ACTION_SUCESS,
+							claimDetails);
+				} else {
+					actionResponse = new ActionResponse(ACTION_ERROR,
+							"Hyperledger transaction failed");
+				}
 			}
 		} else {
 			actionResponse = new ActionResponse(ACTION_INVALID_INPUT,
@@ -75,38 +86,40 @@ public class HomeBusinessAction implements WebActionHandler {
 		mvObject.setView(CommonUtil.toJson(actionResponse));
 		return mvObject;
 	}
+
 	@RequestMapping("viewClaimDetailsByHomeFromHost.wss")
-	public ModelAndView viewClaimDetailsByHomeFromHost(HttpServletRequest request,
-			HttpServletResponse response) {
+	public ModelAndView viewClaimDetailsByHomeFromHost(
+			HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView mvObject = new ModelAndView(
 				ViewType.GENERIC_NO_RENDER_VIEW, "text/html");
 		mvObject.setView("app/hostSentClaimDetails.html");
 		// Assuming a happy flow
 		String claimId = request.getParameter("claimId");
-			mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
+		mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
 				ACTION_SUCESS, getClaimDetails(claimId)));
 		return mvObject;
 
 	}
+
 	private ClaimDetails getClaimDetails(String claimid) {
-		//Read from BlockChain
+		// Read from BlockChain
 		HyperLedgerResponse resp = ClaimHLDAO.getClaimDetailsForHost(claimid);
-		if(resp.isOk())
-		{
-			ClaimDetails claimDetails = _GSON_DESERIALIZER.fromJson(resp.getMessage(), ClaimDetails.class);
-			claimDetails.setAdmsnTypeCode(claimDetails.getAdmsnTypeCode()+".");
+		if (resp.isOk()) {
+			ClaimDetails claimDetails = _GSON_DESERIALIZER.fromJson(
+					resp.getMessage(), ClaimDetails.class);
+			claimDetails
+					.setAdmsnTypeCode(claimDetails.getAdmsnTypeCode() + ".");
 			return claimDetails;
 		}
 		return ClaimDAO.getClaimDetailsForProvider(claimid);
 	}
-	private boolean isValidAmount(String amt)
-	{
+
+	private boolean isValidAmount(String amt) {
 		boolean isValid = false;
-		try{
+		try {
 			Float.parseFloat(amt.trim());
 			isValid = true;
-		}catch(Exception ex)
-		{
+		} catch (Exception ex) {
 			isValid = false;
 		}
 		return isValid;
