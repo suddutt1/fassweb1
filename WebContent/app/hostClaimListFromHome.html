@@ -14,7 +14,7 @@
 </head>
 <body>
 	<nav class="navbar navbar-dark bg-inverse navbar-full navbar-fixed-top">
-		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;<span class="app-title">FAAS APP</span></a>
+		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;FAAS APP</a>
 		<button class="navbar-toggler hidden-sm-up float-xs-right"
 			type="button" data-toggle="collapse" data-target="#navbar-header"
 			aria-controls="navbar-header" aria-expanded="false"
@@ -36,9 +36,12 @@
 	<!-- /navbar -->
 	<div class="container-fluid">
 		<div class="jumbotron">
-			<h3 class="display-5">Available claims for home entity</h3>
-			<p class="lead">List of available claims sent by host . Please select to proceed</p>
+			<h3 class="display-5">Claims from host</h3>
+			<p class="lead">List of available claims. Please select to proceed</p>
 			<div class="list-group" id="claimList">
+			</div>
+			<div class="offset-xs-3 col-xs-6 offset-sm-3 col-sm-6 offset-md-3 col-md-6 offset-lg-3 col-lg-6 offset-xl-3 col-xl-6 ">
+				<a href="loadHostHome.wss" class="btn btn-warning btn-lg col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">Back</a>
 			</div>
 		</div>
 		<div id="spinner" class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
@@ -47,7 +50,7 @@
 		      <span><img src="css/box.gif" class="rounded mx-auto d-block"></span>
 		    </div>
 		  </div>
-		</div>
+		</div>		
 	</div>
 
 	<!-- jQuery first, then Tether, then Bootstrap JS. -->
@@ -58,7 +61,7 @@
 	
 	<script src="js/apputils.js"></script>
 	<script id="claimDetailsTemplate" type="x-tmpl-mustache">
-		<a id="{{claimId}}" href="viewClaimDetailsByHomeFromHost.wss?claimId={{claimId}}&seed={{time}}" 
+		<a id="{{claimId}}" href="viewClaimDetailsByHostFromHome.wss?claimId={{claimId}}&seed={{time}}" 
 			class="list-group-item list-group-item-action">
 					<h5 class="list-group-item-heading">CLAIM NO: {{claimId}}</h5>
 					<p class="list-group-item-text">
@@ -70,7 +73,7 @@
 	<script type="text/javascript">
 		$(document).ready(
 				function() {
-					console.log('Home entity home page loaded');
+					console.log('Host claims from provider page loaded');
 					
 					getLastActionResponse(function(responseObj) {
 						var resp = responseObj.actionResponse;
@@ -81,9 +84,10 @@
 								var claims = resp.result;
 								if(claims.length>0)
 								{
-									var time = (new Date()).getTime();
+									var dt = new Date();
+									var randSeed = dt.getTime();
 									$.each(claims,function(index,claim){
-										claim["time"]=time;
+										claim["time"]=randSeed;
 										var claimContent = Mustache.render(claimDetailTemplate,claim);
 										$("#claimList").append(claimContent);
 										if(index%2==0)

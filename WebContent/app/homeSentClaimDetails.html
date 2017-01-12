@@ -14,7 +14,7 @@
 </head>
 <body>
 	<nav class="navbar navbar-dark bg-inverse navbar-full navbar-fixed-top">
-		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;FAAS APP</a>
+		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;<span class="app-title">FAAS APP</span></a>
 		<button class="navbar-toggler hidden-sm-up float-xs-right"
 			type="button" data-toggle="collapse" data-target="#navbar-header"
 			aria-controls="navbar-header" aria-expanded="false"
@@ -37,8 +37,21 @@
 	<div class="container-fluid">
 		<div class="jumbotron" >
 			<h3 class="display-5">Claim details</h3>
-			<p class="lead">View and share claim details to shared ledger</p>
+			<p class="lead">Save or send claim details to home</p>
 			<div style="height:400px;" id="claimDetails"></div>
+		</div>
+		<div class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" id="saveSucessToBC" tabindex="-1" role="dialog" 
+			aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-body">
+		        <span><img src="css/tick_green.png" style="width:5%"></span>EOB generated and sent to member
+		      </div>
+		      <div class="modal-footer">
+		        <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+		      </div>
+		    </div>
+		  </div>
 		</div>
 		<div id="spinner" class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
 		  <div class="modal-dialog modal-sm">
@@ -47,26 +60,13 @@
 		    </div>
 		  </div>
 		</div>
-		<div class="modal fade" id="saveSucessToBC" tabindex="-1" role="dialog" 
-			aria-labelledby="myModalLabel" aria-hidden="true">
-		  <div class="modal-dialog" role="document">
-		    <div class="modal-content">
-		      <div class="modal-body">
-		        <span><img src="css/tick_green.png" style="width:5%"></span>Claim is saved to shared ledger in block chain
-		      </div>
-		      <div class="modal-footer">
-		        <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
-		      </div>
-		    </div>
-		  </div>
-		</div>
-		<div class="modal fade" id="sendToHost" tabindex="-1" role="dialog" 
+		<div class="modal fade  offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 " id="sendToHome" tabindex="-1" role="dialog" 
 			aria-labelledby="myModalLabel" aria-hidden="true">
 		  <div class="modal-dialog" role="document">
 		    <div class="modal-content">
 		      <div class="modal-body">
 		        <span><img src="css/tick_green.png" style="width:5%"></span>
-		        Claim is sent to Host successfully
+		        Claim is sent to CFA successfully
 		      </div>
 		      <div class="modal-footer">
 		        <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
@@ -76,7 +76,7 @@
 		</div>
 	</div>
 	<!--  A hidden form to submit -->
-	<form action="loadProvideHome.wss" method="post" id="goBackFrm">
+	<form action="loadClaims.wss?status=HOME_SENT_TO_HOST" method="post" id="goBackFrm">
 	</form>
 	<!-- jQuery first, then Tether, then Bootstrap JS. -->
 	<script src="js/jquery-3.1.1.min.js"></script>
@@ -93,8 +93,8 @@
 				</h4>
 			  </div>
 			  <div class="card-block">
-					<table class="table table-striped">
-					<tbody>
+				<table class="table table-striped">
+				  <tbody>
 					<tr>
 					  <th scope="row">Claim Id</th>
 					  <td>{{claimId}}</td>
@@ -172,6 +172,10 @@
 					  <td>{{nonCovAmount}}</td>
 					</tr>
 					<tr>
+					  <th scope="row">Approved Amount</th>
+					  <td>{{approvedAmount}}</td>
+					</tr>
+					<tr>
 					  <th scope="row">Local Plan Code</th>
 					  <td>{{localPlanCode}}</td>
 					</tr>
@@ -188,29 +192,30 @@
 					  <td>{{adjustmentFlag}}</td>
 					</tr>
 					<tr>
+					  <th scope="row">Final Approved Amount</th>
+					  <td>{{finalApprovedAmount}}</td>
+					</tr>
+					<tr>
 					  <th scope="row">Payment Method</th>
 					  <td>{{paymentMethod}}</td>
 					</tr>
-
-					</tbody>
-					</table>		
-				<button class="btn btn-primary" id="sendToHLBtn" onClick="initiateClaimProcess('{{claimId}}')">Save to HyperLedger</button>
-				<button class="btn btn-warning" id="sendToHostBtn" onClick="updateClaim('{{claimId}}','PROVIDER_SENT_TO_HOST')" >Initiate claim process</button>
-				<a href="loadProvideHome.wss" class="btn btn-info">Cancel</a>
-			  	
-				</div>
+				  </tbody>
+				</table>					
+				<a href="#" data-toggle="modal" data-target="#saveSucessToBC" class="btn btn-primary">Generate EOB</a>
+				<button class="btn btn-warning" onClick="updateClaim('{{claimId}}','HOST_SENT_TO_CFA')">Send to CFA</button>
+				<a href="loadClaims.wss?status=HOME_SENT_TO_HOST&seed={{seed}}" class="btn btn-info">Cancel</a>
+			  </div>
 			</div>
 	</script>
 	<script type="text/javascript">
 		$(document).ready(
 				function() {
-					
-					console.log('Provider claim details page loaded');
+					console.log('Home claim details page loaded');
 					//Add the modal action handlers
 					$('#saveSucessToBC').on('hidden.bs.modal', function (e) {
   						$("#goBackFrm").submit();
 					});
-					$('#sendToHost').on('hidden.bs.modal', function (e) {
+					$('#sendToHome').on('hidden.bs.modal', function (e) {
   						$("#goBackFrm").submit();
 					});
 					getLastActionResponse(function(responseObj) {
@@ -222,17 +227,13 @@
 								var claim = resp.result;
 								if(claim)
 								{
+									claim["seed"]= (new Date()).getTime();
 									var claimContent = Mustache.render(claimDetailTemplate,claim);
 									$("#claimDetails").append(claimContent);
-									if(claim.status=='SAVED_TO_BLOCK_CHAIN')
-									{
-										//$("#").disable(true);
-										$('#sendToHLBtn').prop('disabled', true);
-									}
 								}
 								else
 								{
-									$("#claimDetails").html("<p>Imvalid claim number</p>");
+									$("#claimDetails").html("<p>Invalid claim number</p>");
 								}
 						}
 						console.log("Success callback");
@@ -245,47 +246,23 @@
 					});
 				});
 	</script>
+	
 	<script type="text/javascript" >
 		function updateClaim(claimId,status)
 		{		showSpinner();
 				$.ajax({
 					type: 'POST',
-					url:  'updateClaimStatusProvider.wss',
+					url:  'updateClaimStatusHost.wss',
 					data: { 'claimId': claimId,'status': status}
 					 })
 					.done( function (responseText) {
 					   // Triggered if response status code is 200 (OK)
 					   console.log('Response received:' + responseText);
 					   //show the success modal
-					   $('#sendToHost').modal({'show':true});
+					   $('#sendToHome').modal({'show':true});
 					})
 					.fail( function (jqXHR, status, error) {
 					   alert('Update failed');
-					})
-					.always( function() {
-					   // Always run after .done() or .fail()
-					   console.log("May be stop displaying in progress dialog");
-					   hideSpinner();
-					   
-					});
-		}
-	</script>
-	<script type="text/javascript" >
-		function initiateClaimProcess(claimId)
-		{		showSpinner();
-				$.ajax({
-					type: 'POST',
-					url:  'saveClaimToHyperLedger.wss',
-					data: { 'claimId': claimId}
-					 })
-					.done( function (responseText) {
-					   // Triggered if response status code is 200 (OK)
-					   console.log('Response received:' + responseText);
-					   //show the success modal
-					   $('#saveSucessToBC').modal({'show':true});
-					})
-					.fail( function (jqXHR, status, error) {
-					   alert('Claim process initiation failed');
 					})
 					.always( function() {
 					   // Always run after .done() or .fail()

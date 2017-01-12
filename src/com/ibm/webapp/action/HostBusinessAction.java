@@ -54,8 +54,8 @@ public class HostBusinessAction implements WebActionHandler {
 		else if(statusToView == ClaimStatus.HOME_SENT_TO_HOST)
 		{
 			mvObject.setView("app/hostClaimListFromHome.html");
-			/*mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
-					ACTION_SUCESS, ClaimDAO.getClaimListForProvider()));*/
+			mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
+					ACTION_SUCESS, ClaimDAO.getClaimListForHost(statusToView)));
 		}
 		else
 		{
@@ -76,9 +76,23 @@ public class HostBusinessAction implements WebActionHandler {
 		return mvObject;
 
 	}
+	@RequestMapping("viewClaimDetailsByHostFromHome.wss")
+	public ModelAndView viewClaimDetailsByHostFromHome(HttpServletRequest request,
+			HttpServletResponse response) 
+	{
+		ModelAndView mvObject = new ModelAndView(
+				ViewType.GENERIC_NO_RENDER_VIEW, "text/html");
+		mvObject.setView("app/homeSentClaimDetails.html");
+		// Assuming a happy flow
+		String claimId = request.getParameter("claimId");
+			mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
+				ACTION_SUCESS, getClaimDetails(claimId)));
+		return mvObject;
+	}
 	@RequestMapping("updateClaimStatusHost.wss")
 	public ModelAndView updateClaim(HttpServletRequest request,
 			HttpServletResponse response) {
+		HyperLedgerResponse resp  = null;
 		ModelAndView mvObject = new ModelAndView(ViewType.AJAX_VIEW);
 		ActionResponse actionResponse = null;
 		String claimId = request.getParameter("claimId");
@@ -100,7 +114,14 @@ public class HostBusinessAction implements WebActionHandler {
 						"Claim could not be sent");
 			} else {
 				//call the HL_DAO Here
-				HyperLedgerResponse resp = ClaimHLDAO.sendClaimToHome(claimDetails.getClaimId());
+				if(status.equals(ClaimStatus.HOST_SENT_TO_HOME))
+				{
+					resp= ClaimHLDAO.sendClaimToHome(claimDetails.getClaimId());
+				}
+				else if(status.equals(ClaimStatus.HOST_SENT_TO_CFA))
+				{
+					resp= ClaimHLDAO.sendClaimToCFA(claimDetails.getClaimId());
+				}
 				if(resp.isOk())
 				{
 					actionResponse = new ActionResponse(ACTION_SUCESS, claimDetails);

@@ -1,5 +1,5 @@
 function getLastActionResponse(successCallBack,errorCallBack)
-{
+{	showSpinner();
 	$.ajax({
         type: 'POST',
         url:  '_get_last_model_data.wss',
@@ -16,7 +16,17 @@ function getLastActionResponse(successCallBack,errorCallBack)
         .always( function() {
            // Always run after .done() or .fail()
            console.log("Nothing to cover up");
-           
+           hideSpinner();
         });
 		
+}
+
+
+function showSpinner()
+{
+	$('#spinner').modal('show');
+}
+function hideSpinner()
+{
+	$('#spinner').modal('hide');
 }

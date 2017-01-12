@@ -85,6 +85,27 @@ public class ClaimHLDAO {
 		}
 		return response;
 	}
+	public static HyperLedgerResponse sendClaimToCFA(String claimId) {
+		HyperLedgerResponse response = null;
+		try {
+			HyperledgerClient client = getClient(CLAIM_OWNER_HOST);
+			if (client.register()) {
+				HyperLedgerRequest claimRequest = createTransferRequest(
+						claimId, getUserId(CLAIM_OWNER_CFA),
+						"transfer_to_cfa",getUserId(CLAIM_OWNER_HOST));
+				response = client.invokeMethod(claimRequest);
+			} else {
+				response = new HyperLedgerResponse(false);
+				response.setMessage("Registration failed");
+			}
+		} catch (Exception ex) {
+			_LOGGER.log(Level.WARNING, "HL initiaClaimProcess failed with ", ex);
+			response = new HyperLedgerResponse(false);
+			response.setMessage("Exception in initializing the claim process:"
+					+ ex.getMessage());
+		}
+		return response;
+	}
 	public static HyperLedgerResponse sendClaimToHost(String claimId) {
 		HyperLedgerResponse response = null;
 		try {

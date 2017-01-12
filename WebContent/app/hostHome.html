@@ -40,9 +40,16 @@
 			<p class="lead">Click on the appropriate buttons to process claims</p>
 			<div class="list-group" id="actionList">
 				<a href="loadClaims.wss?status=PROVIDER_SENT_TO_HOST" class="list-group-item list-group-item-action list-group-item-info" >Process claims from providers</a>
-				<a href="#" class="list-group-item list-group-item-action list-group-item-danger " >Process claims from Home entity</a>
+				<a href="loadClaims.wss?status=HOME_SENT_TO_HOST" data-target="#" class="list-group-item list-group-item-action list-group-item-danger " >Process claims from Home entity</a>
 			</div>
 		</div>
+		<div id="spinner" class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-sm">
+		    <div class="modal-content">
+		      <span><img src="css/box.gif" class="rounded mx-auto d-block"></span>
+		    </div>
+		  </div>
+		</div>		
 	</div>
 
 	<!-- jQuery first, then Tether, then Bootstrap JS. -->

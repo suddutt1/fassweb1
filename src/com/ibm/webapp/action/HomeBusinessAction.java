@@ -86,7 +86,6 @@ public class HomeBusinessAction implements WebActionHandler {
 		mvObject.setView(CommonUtil.toJson(actionResponse));
 		return mvObject;
 	}
-
 	@RequestMapping("viewClaimDetailsByHomeFromHost.wss")
 	public ModelAndView viewClaimDetailsByHomeFromHost(
 			HttpServletRequest request, HttpServletResponse response) {
