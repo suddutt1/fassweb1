@@ -1,6 +1,8 @@
 package com.ibm.app.web.frmwk;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -19,13 +21,15 @@ public class Loginfilter implements Filter {
 	private static final String _LOGIN_ACTION_PATH_PROP = "loginAction";
 	private static final String _LOGIN_PAGE_PROP = "loginPage";
 	private static final String _AUTH_TOKEN_ATTR_PROP = "authTokenAttribute";
-	private static final String _SECURE_MODEL_DATA_ACTION = "secureModelAction";
+	private static final String _BYPASS_LOGIN_ACTION = "bypassLoginActions";
+	
 
 	private boolean enableLogin = true;
 	private String loginPath = "login.wss";
 	private String loginPage = "login.jsp";
 	private String authToken = "user_role";
-	private String lastModelDataAction = "_get_last_model_data.wss";
+	private Map<String,String> byPassLoginActionMap = new HashMap<String, String>();
+	
 
 	/**
 	 * Default constructor.
@@ -65,7 +69,7 @@ public class Loginfilter implements Filter {
 					int position = requestURI.lastIndexOf("/");
 					String actionName = requestURI.substring(position + 1);
 					if (actionName.equalsIgnoreCase(this.loginPath)
-							|| actionName.equalsIgnoreCase(lastModelDataAction)) {
+							|| this.byPassLoginActionMap.containsKey(actionName)) {
 						chain.doFilter(request, response);
 						redirectToLoginPage = false;
 					}
@@ -84,11 +88,17 @@ public class Loginfilter implements Filter {
 	 */
 	public void init(FilterConfig fConfig) throws ServletException {
 
-		String lastModelAction = fConfig
-				.getInitParameter(_SECURE_MODEL_DATA_ACTION);
-		if (lastModelAction != null && lastModelAction.trim().length() > 0
-				&& lastModelAction.trim().endsWith(".wss")) {
-			this.lastModelDataAction = lastModelAction;
+		String byLoginActionList = fConfig
+				.getInitParameter(_BYPASS_LOGIN_ACTION);
+		if (byLoginActionList != null && byLoginActionList.trim().length() > 0) {
+			String[] actionList = byLoginActionList.trim().split(",");
+			if(actionList!=null)
+			{
+				for(String action: actionList)
+				{
+					this.byPassLoginActionMap.put(action,action);
+				}
+			}
 		}
 		String enableProp = fConfig.getInitParameter(_ENABLE_LOGIN_PROP);
 		if (enableProp != null && enableProp.trim().equalsIgnoreCase("FALSE")) {

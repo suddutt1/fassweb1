@@ -9,6 +9,8 @@ import java.util.List;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import com.ibm.xtq.xslt.xylem.instructions.nametable.GetNamespaceURIIDInstruction;
+
 /**
  * This class is the base class of a java bean that need to be serialized in a
  * mongo nosql db.
@@ -18,8 +20,12 @@ import org.bson.conversions.Bson;
  */
 @SuppressWarnings("serial")
 public abstract class MongoSerializable extends Document {
+	private String objType;
+	
 	public MongoSerializable() {
 		super();
+		this.objType = this.getClass().getName();
+		put("objType",this.objType);
 	}
 
 	public abstract void buildInstance(Document doc);
@@ -37,4 +43,21 @@ public abstract class MongoSerializable extends Document {
 		}
 		return and(filters);
 	}
+
+	/**
+	 * @return the objType
+	 */
+	public final String getObjType() {
+		return (String)get("objType");
+	}
+
+	/**
+	 * @param objType the objType to set
+	 */
+	public final void setObjType(String objType) {
+		this.objType = objType;
+		put("objType",objType);
+	}
+
+	
 }

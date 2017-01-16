@@ -35,17 +35,31 @@
 	</nav>
 	<!-- /navbar -->
 	<div class="container-fluid">
-		<div class="jumbotron" >
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 canvas" >
 			<h3 class="display-5">Claim details</h3>
 			<p class="lead">Save or approve claim details</p>
 			<div style="height:400px;" id="claimDetails"></div>
 		</div>
-		<div class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" id="saveSucessToBC" tabindex="-1" role="dialog" 
+		<div class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6"  
+			id="adjudgateSuccess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-body">
+		        <span><img src="css/tick_green.png" style="width:5%"></span>Claim adjudication is successful
+		      </div>
+		      <div class="modal-footer">
+		        <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<div class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" 
+		id="sentEOBSuccess" tabindex="-1" role="dialog" 
 			aria-labelledby="myModalLabel" aria-hidden="true">
 		  <div class="modal-dialog" role="document">
 		    <div class="modal-content">
 		      <div class="modal-body">
-		        <span><img src="css/tick_green.png" style="width:5%"></span>Claim is saved to shared ledger in block chain
+		        <span><img src="css/tick_green.png" style="width:5%"></span>EOB generated and sent to member
 		      </div>
 		      <div class="modal-footer">
 		        <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
@@ -86,7 +100,7 @@
 
 	<script src="js/apputils.js"></script>
 	<script id="claimDetailsTemplate" type="x-tmpl-mustache">
-		<div class="card col-lg-6">
+		<div class="card col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
 			  <div class="card-header">
 				<h4 class="card-title">				
 					Claim number {{claimId}}
@@ -193,18 +207,20 @@
 					</tr>
 					<tr>
 					  <th scope="row">Final Approved Amount</th>
-					  <td class="has-danger"><input required="required" type="number" name="finalApprovedAmount" class="form-control"
-							id="finalApprovedAmount" value="{{finalApprovedAmount}}" step="any" ></td>
+					  <td class="has-danger" id="finalApprovedAmount">{{finalApprovedAmount}}</td>
 					</tr>
 					<tr>
 					  <th scope="row">Payment Method</th>
 					  <td>{{paymentMethod}}</td>
 					</tr>
 				  </tbody>
-				</table>					
-				<a href="#" data-toggle="modal" data-target="#saveSucessToBC" class="btn btn-primary">Save</a>
-				<button class="btn btn-warning" onClick="updateClaim('{{claimId}}','HOME_SENT_TO_HOST')">Approve &amp; send to host</button>
-				<a href="loadHomeUserHome.wss?seed={{seed}}" class="btn btn-info">Cancel</a>
+				</table>		
+				<div class="col-xs-12 col-md-12 col-lg-12">			
+				<button style="margin-top: 10px;" class="col-xs-12 offset-md-1 col-md-4 offset-lg-1 col-lg-4  btn btn-primary" onClick="adjudicate('{{claimId}}')" >Adjudicate</button>
+				<button style="margin-top: 10px;" class="col-xs-12 offset-md-2 col-md-4 offset-lg-2 col-lg-4  btn btn-info" onClick="generateEOB('{{claimId}}')" >Generate EOB</button>
+				<button style="margin-top: 10px;" class="col-xs-12 offset-md-1 col-md-4 offset-lg-1 col-lg-4  btn btn-warning" onClick="updateClaim('{{claimId}}','HOME_SENT_TO_HOST')">Approve &amp; send to host</button>
+				<a style="margin-top: 10px;" class="col-xs-12 offset-md-2 col-md-4 offset-lg-2 col-lg-4 btn btn btn-info" href="loadHomeUserHome.wss?seed={{seed}}" >Cancel</a>
+				</div>
 			  </div>
 			</div>
 	</script>
@@ -213,8 +229,11 @@
 				function() {
 					console.log('Provider claim details page loaded');
 					//Add the modal action handlers
-					$('#saveSucessToBC').on('hidden.bs.modal', function (e) {
-  						$("#goBackFrm").submit();
+					$('#sentEOBSuccess').on('hidden.bs.modal', function (e) {
+  						console.log("Starting the next phase...");
+					});
+					$('#adjudgateSuccess').on('hidden.bs.modal', function (e) {
+  						console.log("Starting the next phase...");
 					});
 					$('#sendToHost').on('hidden.bs.modal', function (e) {
   						$("#goBackFrm").submit();
@@ -234,7 +253,7 @@
 								}
 								else
 								{
-									$("#claimDetails").html("<p>Imvalid claim number</p>");
+									$("#claimDetails").html("<p>Invalid claim number</p>");
 								}
 						}
 						console.log("Success callback");
@@ -248,36 +267,87 @@
 				});
 	</script>
 	<script type="text/javascript" >
+	function generateEOB(claimId)
+	{		
+			showSpinner();
+			$.ajax({
+					type: 'POST',
+					url:  'generateEOB.wss',
+					data: { 'claimId': claimId }
+					 })
+					.done( function (responseText) {
+					   // Triggered if response status code is 200 (OK)
+					   console.log('Response received:' + responseText);
+					   //show the success modal
+					   $('#sentEOBSuccess').modal({'show':true});
+					})
+					.fail( function (jqXHR, status, error) {
+					   alert('EOB generation failed');
+					})
+					.always( function() {
+					   // Always run after .done() or .fail()
+					   console.log("May be stop displaying in progress dialog");
+					   hideSpinner();
+					});
+	}
+	</script>
+	
+	<script type="text/javascript" >
+	function adjudicate(claimId)
+		{		
+			showSpinner();
+			$.ajax({
+					type: 'POST',
+					url:  'adjudicateClaimByHome.wss',
+					data: { 'claimId': claimId }
+					 })
+					.done( function (responseText) {
+					   // Triggered if response status code is 200 (OK)
+					   console.log('Response received:' + responseText);
+					   //show the success modal
+					   var response = eval("("+responseText+")");
+					   var claim = response.result;
+					   if(claim!=null)
+					   {
+					   		console.log("Final approved amount "+ claim.finalApprovedAmount);
+					   		$('#finalApprovedAmount').text(claim.finalApprovedAmount);
+					   }
+					   $('#adjudgateSuccess').modal({'show':true});
+					})
+					.fail( function (jqXHR, status, error) {
+					   alert('Claim adjudication failed');
+					})
+					.always( function() {
+					   // Always run after .done() or .fail()
+					   console.log("May be stop displaying in progress dialog");
+					   hideSpinner();
+					});
+		}
+	</script>
+	
+	<script type="text/javascript" >
 		function updateClaim(claimId,status)
 		{		showSpinner();
-				var apvAmt = $("#finalApprovedAmount").val();
-				if(apvAmt =="")
-				{
-					alert("Invalid approval amount")
-				}
-				else
-				{
-					$.ajax({
-						type: 'POST',
-						url:  'updateClaimStatusHome.wss',
-						data: { 'claimId': claimId,'status': status,'finalApprovedAmount': apvAmt}
-						 })
-						.done( function (responseText) {
-						   // Triggered if response status code is 200 (OK)
-						   console.log('Response received:' + responseText);
-						   //show the success modal
-						   $('#sendToHost').modal({'show':true});
-						})
-						.fail( function (jqXHR, status, error) {
-						   alert('Update failed');
-						})
-						.always( function() {
-						   // Always run after .done() or .fail()
-						   console.log("May be stop displaying in progress dialog");
-						   hideSpinner();
-						   
-						});
-					} 
+				$.ajax({
+					type: 'POST',
+					url:  'updateClaimStatusHome.wss',
+					data: { 'claimId': claimId,'status': status}
+					 })
+					.done( function (responseText) {
+					   // Triggered if response status code is 200 (OK)
+					   console.log('Response received:' + responseText);
+					   //show the success modal
+					   $('#sendToHost').modal({'show':true});
+					})
+					.fail( function (jqXHR, status, error) {
+					   alert('Update failed');
+					})
+					.always( function() {
+					   // Always run after .done() or .fail()
+					   console.log("May be stop displaying in progress dialog");
+					   hideSpinner();
+					   
+					});
 		}
 	</script>
 </body>

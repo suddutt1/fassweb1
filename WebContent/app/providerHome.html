@@ -94,12 +94,26 @@
 										$("#claimList").append(claimContent);
 										if(index%2==0)
 										{
-											$("#"+claim.claimId).addClass("list-group-item-success");
+											if(claim.status == 'SAVED_TO_BLOCK_CHAIN' )
+											{
+												$("#"+claim.claimId).addClass("list-group-item-danger");
+											}
+											else
+											{
+												$("#"+claim.claimId).addClass("list-group-item-success");
+											}
 										}
 										else
 										{
-											$("#"+claim.claimId).addClass("list-group-item-primary");
+											if(claim.status =='SAVED_TO_BLOCK_CHAIN')
+											{
+												$("#"+claim.claimId).addClass("list-group-item-danger");
+											}else
+											{
+												$("#"+claim.claimId).addClass("list-group-item-primary");
+											}
 										}
+										
 									});
 									
 								}

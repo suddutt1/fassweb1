@@ -45,9 +45,9 @@
 			<param-value>auth_token</param-value>
 		</init-param>
 		<init-param>
-			<description>Action path to bypass any authentication.Should be same as MobileFrameworkDispatcher's same param name </description>
-			<param-name>secureModelAction</param-name>
-			<param-value>_get_last_model_data.wss</param-value>
+			<description>Action paths to bypass any authentication.Should be comma separated </description>
+			<param-name>bypassLoginActions</param-name>
+			<param-value>_get_last_model_data.wss,viewEOB.wss</param-value>
 		</init-param>
 	</filter>
 	<filter-mapping>

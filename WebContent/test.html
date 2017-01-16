@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>FAAS APP</title>
+<!-- Required meta tags always come first -->
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/app.css">
+<link rel="manifest" href="manifest.json">
+ 
+</head>
+<body>
+	<nav class="navbar navbar-dark bg-inverse navbar-full navbar-fixed-top">
+		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;<span class="app-title">FAAS APP</span></a>
+		
+		<button class="navbar-toggler hidden-sm-up float-xs-right"
+			type="button" data-toggle="collapse" data-target="#navbar-header"
+			aria-controls="navbar-header" aria-expanded="false"
+			aria-label="Toggle navigation"></button>
+		<div class="collapse navbar-toggleable-xs" id="navbar-header">
+			<ul class="nav navbar-nav float-xs-right">
+				<li class="nav-item"><button class="btn btn-outline-info">Sign
+						up</button></li>
+				<li class="nav-item"><button class="btn btn-primary">Login</button>
+				</li>
+
+			</ul>
+		</div>
+	</nav>
+	<!-- /navbar -->
+	<div class="container-fluid">
+		<div style="" class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 canvas" >
+			<h3 class="display-5">Claim details</h3>
+			<p class="lead">Save or approve claim details</p>
+			<div id="claimDetails">
+				<div class="card col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+			  <div class="card-header">
+				<h4 class="card-title">				
+					Claim number {{claimId}}
+				</h4>
+			  </div>
+			  <div class="card-block">
+				<table class="table table-striped">
+				  <tbody>
+					<tr>
+					  <th scope="row">Claim Id</th>
+					  <td>{{claimId}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Service Date</th>
+					  <td>{{serviceDate}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Admission Date</th>
+					  <td>{{admissionDate}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Provider Id</th>
+					  <td>{{providerId}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Member Id</th>
+					  <td>{{memberId}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Subscriber Id</th>
+					  <td>{{subscriberId}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Diag Code</th>
+					  <td>{{diagCode}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Procedure Code</th>
+					  <td>{{procedureCode}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Procedure Date</th>
+					  <td>{{procedureDate}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Admsn Hour Code</th>
+					  <td>{{admsnHourCode}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Admsn Type Code</th>
+					  <td>{{admsnTypeCode}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Admsn Srvc Code</th>
+					  <td>{{admsnSrvcCode}}</td>
+					</tr>
+					<tr>
+					  <th scope="row">Final Approved Amount</th>
+					  <td class="has-danger"><input required="required" type="number" name="finalApprovedAmount" class="form-control"
+							id="finalApprovedAmount" value="{{finalApprovedAmount}}" step="any" ></td>
+					</tr>
+					<tr>
+					  <th scope="row">Payment Method</th>
+					  <td>{{paymentMethod}}</td>
+					</tr>
+				  </tbody>
+				</table>		
+				<div class="col-xs-12 col-md-12 col-lg-12">	
+					<a href="#" data-toggle="modal" data-target="#saveSucessToBC" class="col-xs-12 col-md-3 col-lg-2 btn btn-primary">Save</a>
+					<button class="col-xs-12 offset-md-1 col-md-5 offset-lg-1 col-lg-6 btn btn-warning" onClick="updateClaim('{{claimId}}','HOME_SENT_TO_HOST')">Approve &amp; send to host</button>
+					<a href="loadHomeUserHome.wss?seed={{seed}}" class="col-xs-12 offset-md-1 col-md-2 offset-lg-1 col-lg-2 btn btn-info">Cancel</a>
+				</div>
+			  </div>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- jQuery first, then Tether, then Bootstrap JS. -->
+	<script src="js/jquery-3.1.1.min.js"></script>
+	<script src="js/tether.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		
+		$(document).ready(function(){
+			
+		});
+	</script>
+</body>
+</html>

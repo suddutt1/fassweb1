@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>FAAS MEMBER APP</title>
+<!-- Required meta tags always come first -->
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+	<nav class="navbar navbar-dark bg-inverse navbar-full navbar-fixed-top">
+		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;<span class="app-title">FAAS APP( Member)</span></a>
+		
+		<button class="navbar-toggler hidden-sm-up float-xs-right"
+			type="button" data-toggle="collapse" data-target="#navbar-header"
+			aria-controls="navbar-header" aria-expanded="false"
+			aria-label="Toggle navigation"></button>
+		<div class="collapse navbar-toggleable-xs" id="navbar-header">
+			<ul class="nav navbar-nav float-xs-right">
+				<li class="nav-item"><button class="btn btn-outline-info">Sign
+						up</button></li>
+				<li class="nav-item"><button class="btn btn-primary">Login</button>
+				</li>
+
+			</ul>
+		</div>
+	</nav>
+	<!-- /navbar -->
+	<div class="container-fluid">
+		<div class="jumbotron" style="text-align:center">
+			<h3 class="display-5">FAAS Application</h3>
+			<p class="lead">Member application interface</p>
+			<p class="lead">EOB notification will appear here</p>
+			<p class="lead">
+			</p>
+		</div>
+		<div class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" 
+				id="eobMessage" tabindex="-1" role="dialog" 
+			aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-body">
+		        <span><img src="css/tick_green.png" style="width:5%"></span>Your EOB is generated. Click on 'View' button to open
+		      </div>
+		      <div class="modal-footer">
+		        <a href="#" class="btn btn-secondary" data-dismiss="modal">View</a>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	</div>
+
+	<!-- jQuery first, then Tether, then Bootstrap JS. -->
+	<script src="js/jquery-3.1.1.min.js"></script>
+	<script src="js/tether.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+	var wsocket;
+	var baseURL;
+	var claimId;
+	function  onMessage(event){
+		console.log(event.data);
+		var response  = eval("("+event.data+")");
+		claimId = response.claimId;
+		$('#eobMessage').modal({'show':true});
+	}  
+	$(document).ready(function(){
+		$('#eobMessage').on('hidden.bs.modal', function (e) {
+  				window.open(baseURL+"?claimId="+claimId);
+		});
+		console.log("Member home page is loaded.")
+		var fullHref = window.location.href;
+		var urlWithProto = fullHref.replace('memberhome.html','eobnotification');
+		var proto = window.location.protocol;
+		var url = urlWithProto.replace(proto,"ws:");
+		console.log("URL to invoke for socket: "+ url);
+		baseURL = fullHref.replace('memberhome.html','viewEOB.wss');
+		wsocket = new WebSocket(url);       
+        wsocket.onmessage = onMessage; 
+	});
+	</script>
+</body>
+</html>

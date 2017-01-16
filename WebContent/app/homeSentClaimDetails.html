@@ -40,19 +40,6 @@
 			<p class="lead">Save or send claim details to home</p>
 			<div style="height:400px;" id="claimDetails"></div>
 		</div>
-		<div class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" id="saveSucessToBC" tabindex="-1" role="dialog" 
-			aria-labelledby="myModalLabel" aria-hidden="true">
-		  <div class="modal-dialog" role="document">
-		    <div class="modal-content">
-		      <div class="modal-body">
-		        <span><img src="css/tick_green.png" style="width:5%"></span>EOB generated and sent to member
-		      </div>
-		      <div class="modal-footer">
-		        <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
-		      </div>
-		    </div>
-		  </div>
-		</div>
 		<div id="spinner" class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
 		  <div class="modal-dialog modal-sm">
 		    <div class="modal-content">
@@ -184,24 +171,12 @@
 					  <td>{{remotePlanCode}}</td>
 					</tr>
 					<tr>
-					  <th scope="row">Cost Share</th>
-					  <td>{{costShare}}</td>
-					</tr>
-					<tr>
-					  <th scope="row">Adjustment Flag</th>
-					  <td>{{adjustmentFlag}}</td>
-					</tr>
-					<tr>
 					  <th scope="row">Final Approved Amount</th>
-					  <td>{{finalApprovedAmount}}</td>
+					  <td>{{approvedAmount}}</td>
 					</tr>
-					<tr>
-					  <th scope="row">Payment Method</th>
-					  <td>{{paymentMethod}}</td>
-					</tr>
+					
 				  </tbody>
 				</table>					
-				<a href="#" data-toggle="modal" data-target="#saveSucessToBC" class="btn btn-primary">Generate EOB</a>
 				<button class="btn btn-warning" onClick="updateClaim('{{claimId}}','HOST_SENT_TO_CFA')">Send to CFA</button>
 				<a href="loadClaims.wss?status=HOME_SENT_TO_HOST&seed={{seed}}" class="btn btn-info">Cancel</a>
 			  </div>
@@ -246,7 +221,6 @@
 					});
 				});
 	</script>
-	
 	<script type="text/javascript" >
 		function updateClaim(claimId,status)
 		{		showSpinner();

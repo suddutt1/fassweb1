@@ -57,14 +57,13 @@ public class HomeBusinessAction implements WebActionHandler {
 		ModelAndView mvObject = new ModelAndView(ViewType.AJAX_VIEW);
 		ActionResponse actionResponse = null;
 		String claimId = request.getParameter("claimId");
-		String finalApvlAmt = request.getParameter("finalApprovedAmount");
+
 		ClaimStatus status = ClaimStatus
 				.valueOf(request.getParameter("status"));
 		ClaimDetails claimDetails = getClaimDetails(claimId);
-		if (claimDetails != null && isValidAmount(finalApvlAmt)) {
+		if (claimDetails != null) {
 			claimDetails.setStatus(status);
 			claimDetails.setCurrentOwner(CLAIM_OWNER_HOST);
-			claimDetails.setFinalApprovedAmount(finalApvlAmt.trim());
 			if (!ClaimDAO.updateClaim(claimDetails)) {
 				actionResponse = new ActionResponse(ACTION_ERROR,
 						"Claim could not be sent to Host");
@@ -86,6 +85,42 @@ public class HomeBusinessAction implements WebActionHandler {
 		mvObject.setView(CommonUtil.toJson(actionResponse));
 		return mvObject;
 	}
+
+	@RequestMapping("adjudicateClaimByHome.wss")
+	public ModelAndView adjudicateClaimByHome(HttpServletRequest request,
+			HttpServletResponse response) {
+		ModelAndView mvObject = new ModelAndView(ViewType.AJAX_VIEW);
+		ActionResponse actionResponse = null;
+		String claimId = request.getParameter("claimId");
+		ClaimDetails claimDetails = getClaimDetails(claimId);
+		if (claimDetails != null) {
+			// Generating a random approval amt
+			adjudicate(claimDetails);
+			// Update the claim details
+			if (ClaimDAO.updateClaim(claimDetails)) {
+				HyperLedgerResponse resp = ClaimHLDAO
+						.adjudicateClaim(claimId,
+								claimDetails.getFinalApprovedAmount(), "F2312",
+								"L2034");
+				if (resp.isOk()) {
+					actionResponse = new ActionResponse(ACTION_SUCESS,
+							claimDetails);
+				} else {
+					actionResponse = new ActionResponse(ACTION_ERROR,
+							"Hyperledger transaction for adjucation failed");
+				}
+			} else {
+				actionResponse = new ActionResponse(ACTION_ERROR,
+						"Claim adjudication failed ");
+			}
+		} else {
+			actionResponse = new ActionResponse(ACTION_INVALID_INPUT,
+					"Invalid claim numebr/claim not found");
+		}
+		mvObject.setView(CommonUtil.toJson(actionResponse));
+		return mvObject;
+	}
+
 	@RequestMapping("viewClaimDetailsByHomeFromHost.wss")
 	public ModelAndView viewClaimDetailsByHomeFromHost(
 			HttpServletRequest request, HttpServletResponse response) {
@@ -111,6 +146,26 @@ public class HomeBusinessAction implements WebActionHandler {
 			return claimDetails;
 		}
 		return ClaimDAO.getClaimDetailsForProvider(claimid);
+	}
+
+	private void adjudicate(ClaimDetails claimDetails) {
+		int chargedAmt = getAmount(claimDetails.getChargedAmount());
+		int nonCovAmt = getAmount(claimDetails.getNonCovAmount());
+		int finalApprovedAmt = chargedAmt - nonCovAmt;
+		claimDetails.setFinalApprovedAmount(String.valueOf(finalApprovedAmt)
+				+ ".00");
+
+	}
+
+	private int getAmount(String amt) {
+		double returnAmt = 0.0;
+		try {
+			returnAmt = Float.parseFloat(amt.trim());
+
+		} catch (Exception ex) {
+			returnAmt = 0.0;
+		}
+		return (int) returnAmt;
 	}
 
 	private boolean isValidAmount(String amt) {

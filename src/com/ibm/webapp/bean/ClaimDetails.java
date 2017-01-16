@@ -271,7 +271,7 @@ public class ClaimDetails extends MongoSerializable{
 	}
 
 	public void buildInstance(Document doc){
-		
+		try{
 		setInternalFields(doc);
 		this.claimId=(String)doc.get("claimId");
 		this.serviceDate=(String)doc.get("serviceDate");
@@ -303,6 +303,10 @@ public class ClaimDetails extends MongoSerializable{
 		this.currentOwner=(String)doc.get("currentOwner");
 		this.status=ClaimStatus.valueOf((String)doc.get("status"));
 		this.bcClaimStatus=(String)doc.get("bcClaimStatus");
+		}catch(Throwable ex)
+		{
+			ex.printStackTrace();
+		}
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
