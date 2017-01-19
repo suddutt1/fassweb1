@@ -133,11 +133,11 @@ public class ClaimHLDAO {
 	public static HyperLedgerResponse sendClaimToHostByHome(String claimId) {
 		HyperLedgerResponse response = null;
 		try {
-			HyperledgerClient client = getClient(CLAIM_OWNER_HOME);
+			HyperledgerClient client = getClient(CLAIM_OWNER_HOST);
 			if (client.register()) {
 				HyperLedgerRequest claimRequest = createTransferRequest(
 						claimId, getUserId(CLAIM_OWNER_HOST),
-						"transfer_to_hostByHome", getUserId(CLAIM_OWNER_HOME));
+						"transfer_to_hostByHome", getUserId(CLAIM_OWNER_HOST));
 				response = client.invokeMethod(claimRequest);
 			} else {
 				response = new HyperLedgerResponse(false);
@@ -145,6 +145,27 @@ public class ClaimHLDAO {
 			}
 		} catch (Exception ex) {
 			_LOGGER.log(Level.WARNING, "HL initiaClaimProcess failed with ", ex);
+			response = new HyperLedgerResponse(false);
+			response.setMessage("Exception in initializing the claim process:"
+					+ ex.getMessage());
+		}
+		return response;
+	}
+	public static HyperLedgerResponse calculatePricing(String claimId,
+			String approvedAmt) {
+		HyperLedgerResponse response = null;
+		try {
+			HyperledgerClient client = getClient(CLAIM_OWNER_HOST);
+			if (client.register()) {
+				HyperLedgerRequest claimRequest = createPricingRequest(claimId,
+						getUserId(CLAIM_OWNER_HOST), approvedAmt,getUserId(CLAIM_OWNER_HOST));
+				response = client.invokeMethod(claimRequest);
+			} else {
+				response = new HyperLedgerResponse(false);
+				response.setMessage("Registration failed");
+			}
+		} catch (Exception ex) {
+			_LOGGER.log(Level.WARNING, "HL calculatePricing failed with ", ex);
 			response = new HyperLedgerResponse(false);
 			response.setMessage("Exception in initializing the claim process:"
 					+ ex.getMessage());
@@ -153,37 +174,47 @@ public class ClaimHLDAO {
 	}
 
 	public static HyperLedgerResponse adjudicateClaim(String claimId,
-			String approvedAmt, String localPlan, String remotePlan) {
+			String approvedAmt, String localPlan, String remotePlan,String patientLiablity,String costShare) {
 		HyperLedgerResponse response = null;
 		try {
 			HyperledgerClient client = getClient(CLAIM_OWNER_HOST);
 			if (client.register()) {
-				HyperLedgerRequest claimRequest = createAdjudicateRequest(claimId,
-						getUserId(CLAIM_OWNER_HOST), approvedAmt, localPlan,
-						remotePlan, getUserId(CLAIM_OWNER_HOST));
-				response = client.invokeMethod(claimRequest);
+				
+				HyperLedgerRequest requestFinalAmtUpdate = createAdjudicateRequest(claimId,
+						getUserId(CLAIM_OWNER_HOME), approvedAmt, localPlan,
+						remotePlan,patientLiablity, costShare,getUserId(CLAIM_OWNER_HOST));
+				response = client.invokeMethod(requestFinalAmtUpdate);
 			} else {
 				response = new HyperLedgerResponse(false);
 				response.setMessage("Registration failed");
 			}
 		} catch (Exception ex) {
-			_LOGGER.log(Level.WARNING, "HL initiaClaimProcess failed with ", ex);
+			_LOGGER.log(Level.WARNING, "HL adjudicateClaim failed with ", ex);
 			response = new HyperLedgerResponse(false);
-			response.setMessage("Exception in initializing the claim process:"
+			response.setMessage("Exception in adjudicateClaim the claim process:"
 					+ ex.getMessage());
 		}
 		return response;
 	}
-
 	private static HyperLedgerRequest createAdjudicateRequest(String claimId,
 			String caller, String approvedAmt, String localPlan,
-			String remotePlan, String context) {
+			String remotePlan, String patientLiabity,String costShare,String context) {
 		HyperLedgerRequest request = new HyperLedgerRequest();
 		request.setMethod("invoke");
 		request.setChainCodeName(_chainCode);
-		request.setCallFunction("update_by_host");
+		request.setCallFunction("update_final_approved_amount_by_home");
 		request.setFunctionArgs(new String[] { caller, claimId, approvedAmt,
-				localPlan, remotePlan });
+				localPlan, remotePlan,patientLiabity,costShare });
+		request.setSecureContext(context);
+		return request;
+	}
+	private static HyperLedgerRequest createPricingRequest(String claimId,
+			String caller, String approvedAmt,  String context) {
+		HyperLedgerRequest request = new HyperLedgerRequest();
+		request.setMethod("invoke");
+		request.setChainCodeName(_chainCode);
+		request.setCallFunction("update_approved_amt_by_host");
+		request.setFunctionArgs(new String[] { caller, claimId, approvedAmt });
 		request.setSecureContext(context);
 		return request;
 	}

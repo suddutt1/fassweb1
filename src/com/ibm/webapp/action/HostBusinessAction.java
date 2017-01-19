@@ -18,7 +18,6 @@ import com.ibm.webapp.bean.ClaimStatus;
 import com.ibm.webapp.dao.ClaimDAO;
 import com.ibm.webapp.hldao.ClaimHLDAO;
 
-
 /**
  * Action class to handle Host insurance originated web page actions
  * 
@@ -28,71 +27,121 @@ import com.ibm.webapp.hldao.ClaimHLDAO;
 public class HostBusinessAction implements WebActionHandler {
 
 	private static final Gson _GSON_DESERIALIZER = new GsonBuilder().create();
+
 	@RequestMapping("loadHostHome.wss")
-	public ModelAndView loadHostHome(HttpServletRequest request,HttpServletResponse response)
-	{
+	public ModelAndView loadHostHome(HttpServletRequest request,
+			HttpServletResponse response) {
 		ModelAndView mvObject = new ModelAndView(
 				ViewType.GENERIC_NO_RENDER_VIEW, "text/html");
 		mvObject.setView("app/hostHome.html");
-		/*mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
-				ACTION_SUCESS, ClaimDAO.getClaimListForProvider()));*/
+		/*
+		 * mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
+		 * ACTION_SUCESS, ClaimDAO.getClaimListForProvider()));
+		 */
 		return mvObject;
 	}
+
 	@RequestMapping("loadClaims.wss")
-	public ModelAndView loadClaims(HttpServletRequest request,HttpServletResponse response)
-	{
+	public ModelAndView loadClaims(HttpServletRequest request,
+			HttpServletResponse response) {
 		ModelAndView mvObject = new ModelAndView(
 				ViewType.GENERIC_NO_RENDER_VIEW, "text/html");
-		ClaimStatus statusToView = ClaimStatus.valueOf(request.getParameter("status"));
-		if(statusToView == ClaimStatus.PROVIDER_SENT_TO_HOST)
-		{
+		ClaimStatus statusToView = ClaimStatus.valueOf(request
+				.getParameter("status"));
+		if (statusToView == ClaimStatus.PROVIDER_SENT_TO_HOST) {
 			mvObject.setView("app/hostClaimListFromProvider.html");
 			mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
-				ACTION_SUCESS, ClaimDAO.getClaimListForHost(statusToView)));
-			
-		}
-		else if(statusToView == ClaimStatus.HOME_SENT_TO_HOST)
-		{
+					ACTION_SUCESS, ClaimDAO.getClaimListForHost(statusToView)));
+
+		} else if (statusToView == ClaimStatus.HOME_SENT_TO_HOST) {
 			mvObject.setView("app/hostClaimListFromHome.html");
 			mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
 					ACTION_SUCESS, ClaimDAO.getClaimListForHost(statusToView)));
-		}
-		else
-		{
-			//We really do not know ??? :) 
+		} else {
+			// We really do not know ??? :)
 		}
 		return mvObject;
 	}
-	@RequestMapping("viewClaimDetailsByHostFromProvider.wss")
-	public ModelAndView viewClaimDetailsByHostFromProvider(HttpServletRequest request,
+
+	@RequestMapping("calculatePricing.wss")
+	public ModelAndView calculatePricing(HttpServletRequest request,
 			HttpServletResponse response) {
+
+		HyperLedgerResponse resp = null;
+		ModelAndView mvObject = new ModelAndView(ViewType.AJAX_VIEW);
+		ActionResponse actionResponse = null;
+		String claimId = request.getParameter("claimId");
+		ClaimDetails claimDetails = getClaimDetails(claimId);
+		if (claimDetails != null) {
+			int chargedAmt = getAmount(claimDetails.getChargedAmount());
+			int approvedAmt = chargedAmt - 35;
+			claimDetails.setApprovedAmount(approvedAmt + ".00");
+			// Now update the claim
+			if (!ClaimDAO.updateClaim(claimDetails)) {
+				actionResponse = new ActionResponse(ACTION_ERROR,
+						"Claim could not be updated");
+			} else {
+				// call the HL_DAO Here
+				resp = ClaimHLDAO.calculatePricing(claimDetails.getClaimId(),approvedAmt+".00");
+				if (resp.isOk()) {
+					actionResponse = new ActionResponse(ACTION_SUCESS,
+							claimDetails);
+				} else {
+					actionResponse = new ActionResponse(ACTION_ERROR,
+							claimDetails);
+				}
+			}
+		} else {
+			actionResponse = new ActionResponse(ACTION_INVALID_INPUT,
+					"Invalid claim numebr/claim not found");
+		}
+		mvObject.setView(CommonUtil.toJson(actionResponse));
+		return mvObject;
+
+	}
+
+	private int getAmount(String amt) {
+		double returnAmt = 0.0;
+		try {
+			returnAmt = Float.parseFloat(amt.trim());
+
+		} catch (Exception ex) {
+			returnAmt = 0.0;
+		}
+		return (int) returnAmt;
+	}
+
+	@RequestMapping("viewClaimDetailsByHostFromProvider.wss")
+	public ModelAndView viewClaimDetailsByHostFromProvider(
+			HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView mvObject = new ModelAndView(
 				ViewType.GENERIC_NO_RENDER_VIEW, "text/html");
 		mvObject.setView("app/providerSentClaimDetails.html");
 		// Assuming a happy flow
 		String claimId = request.getParameter("claimId");
-			mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
+		mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
 				ACTION_SUCESS, getClaimDetails(claimId)));
 		return mvObject;
 
 	}
+
 	@RequestMapping("viewClaimDetailsByHostFromHome.wss")
-	public ModelAndView viewClaimDetailsByHostFromHome(HttpServletRequest request,
-			HttpServletResponse response) 
-	{
+	public ModelAndView viewClaimDetailsByHostFromHome(
+			HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView mvObject = new ModelAndView(
 				ViewType.GENERIC_NO_RENDER_VIEW, "text/html");
 		mvObject.setView("app/homeSentClaimDetails.html");
 		// Assuming a happy flow
 		String claimId = request.getParameter("claimId");
-			mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
+		mvObject.addModel(APP_ACTION_RESPONSE, new ActionResponse(
 				ACTION_SUCESS, getClaimDetails(claimId)));
 		return mvObject;
 	}
+
 	@RequestMapping("updateClaimStatusHost.wss")
 	public ModelAndView updateClaim(HttpServletRequest request,
 			HttpServletResponse response) {
-		HyperLedgerResponse resp  = null;
+		HyperLedgerResponse resp = null;
 		ModelAndView mvObject = new ModelAndView(ViewType.AJAX_VIEW);
 		ActionResponse actionResponse = null;
 		String claimId = request.getParameter("claimId");
@@ -101,34 +150,28 @@ public class HostBusinessAction implements WebActionHandler {
 		ClaimDetails claimDetails = getClaimDetails(claimId);
 		if (claimDetails != null) {
 			claimDetails.setStatus(status);
-			if(status.equals(ClaimStatus.HOST_SENT_TO_HOME))
-			{
+			if (status.equals(ClaimStatus.HOST_SENT_TO_HOME)) {
 				claimDetails.setCurrentOwner(CLAIM_OWNER_HOME);
-			}
-			else if(status.equals(ClaimStatus.HOST_SENT_TO_CFA))
-			{
+			} else if (status.equals(ClaimStatus.HOST_SENT_TO_CFA)) {
 				claimDetails.setCurrentOwner(CLAIM_OWNER_CFA);
-			}	
+			}
 			if (!ClaimDAO.updateClaim(claimDetails)) {
 				actionResponse = new ActionResponse(ACTION_ERROR,
 						"Claim could not be sent");
 			} else {
-				//call the HL_DAO Here
-				if(status.equals(ClaimStatus.HOST_SENT_TO_HOME))
-				{
-					resp= ClaimHLDAO.sendClaimToHome(claimDetails.getClaimId());
+				// call the HL_DAO Here
+				if (status.equals(ClaimStatus.HOST_SENT_TO_HOME)) {
+					resp = ClaimHLDAO
+							.sendClaimToHome(claimDetails.getClaimId());
+				} else if (status.equals(ClaimStatus.HOST_SENT_TO_CFA)) {
+					resp = ClaimHLDAO.sendClaimToCFA(claimDetails.getClaimId());
 				}
-				else if(status.equals(ClaimStatus.HOST_SENT_TO_CFA))
-				{
-					resp= ClaimHLDAO.sendClaimToCFA(claimDetails.getClaimId());
-				}
-				if(resp.isOk())
-				{
-					actionResponse = new ActionResponse(ACTION_SUCESS, claimDetails);
-				}
-				else
-				{
-					actionResponse = new ActionResponse(ACTION_ERROR, claimDetails);
+				if (resp.isOk()) {
+					actionResponse = new ActionResponse(ACTION_SUCESS,
+							claimDetails);
+				} else {
+					actionResponse = new ActionResponse(ACTION_ERROR,
+							claimDetails);
 				}
 			}
 		} else {
@@ -138,14 +181,15 @@ public class HostBusinessAction implements WebActionHandler {
 		mvObject.setView(CommonUtil.toJson(actionResponse));
 		return mvObject;
 	}
-	
+
 	private ClaimDetails getClaimDetails(String claimid) {
-		//Read from BlockChain
+		// Read from BlockChain
 		HyperLedgerResponse resp = ClaimHLDAO.getClaimDetailsForHost(claimid);
-		if(resp.isOk())
-		{
-			ClaimDetails claimDetails = _GSON_DESERIALIZER.fromJson(resp.getMessage(), ClaimDetails.class);
-			claimDetails.setAdmsnTypeCode(claimDetails.getAdmsnTypeCode()+".");
+		if (resp.isOk()) {
+			ClaimDetails claimDetails = _GSON_DESERIALIZER.fromJson(
+					resp.getMessage(), ClaimDetails.class);
+			claimDetails
+					.setAdmsnTypeCode(claimDetails.getAdmsnTypeCode() + ".");
 			return claimDetails;
 		}
 		return ClaimDAO.getClaimDetailsForProvider(claimid);

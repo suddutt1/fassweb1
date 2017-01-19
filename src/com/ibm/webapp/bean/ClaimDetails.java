@@ -31,7 +31,7 @@ public class ClaimDetails extends MongoSerializable{
 	private String unitOfService;
 	private String chargedAmount;
 	private String nonCovAmount;
-	private String approvedAmount;
+	private String approvedAmount;//Allowed Amount
 	private String localPlanCode;
 	private String remotePlanCode;
 	private String costShare;
@@ -40,6 +40,7 @@ public class ClaimDetails extends MongoSerializable{
 	private String finalApprovedAmount;
 	private String paymentMethod;
 	private String bcClaimStatus;
+	private String paitentLiability;
 	//------Following attributes are for tracking purpose
 	private String currentOwner;
 	private ClaimStatus status;
@@ -303,6 +304,8 @@ public class ClaimDetails extends MongoSerializable{
 		this.currentOwner=(String)doc.get("currentOwner");
 		this.status=ClaimStatus.valueOf((String)doc.get("status"));
 		this.bcClaimStatus=(String)doc.get("bcClaimStatus");
+		this.paitentLiability= (String)doc.get("paitentLiability");
+		
 		}catch(Throwable ex)
 		{
 			ex.printStackTrace();
@@ -331,6 +334,19 @@ public class ClaimDetails extends MongoSerializable{
 				+ owner + ", finalApprovedAmount=" + finalApprovedAmount
 				+ ", paymentMethod=" + paymentMethod + ", currentOwner="
 				+ currentOwner + ", status=" + status +", + bcClaimStatus= "+ bcClaimStatus+"]";
+	}
+	/**
+	 * @return the paitentLiability
+	 */
+	public final String getPaitentLiability() {
+		return (String)get("paitentLiability");
+	}
+	/**
+	 * @param paitentLiability the paitentLiability to set
+	 */
+	public final void setPaitentLiability(String paitentLiability) {
+		this.paitentLiability = paitentLiability;
+		put("paitentLiability",paitentLiability);
 	}
 	
 	

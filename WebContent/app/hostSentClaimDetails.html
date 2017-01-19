@@ -40,7 +40,7 @@
 			<p class="lead">Save or approve claim details</p>
 			<div style="height:400px;" id="claimDetails"></div>
 		</div>
-		<div class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6"  
+		<div class="modal offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6"  
 			id="adjudgateSuccess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		  <div class="modal-dialog" role="document">
 		    <div class="modal-content">
@@ -53,7 +53,7 @@
 		    </div>
 		  </div>
 		</div>
-		<div class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" 
+		<div class="modal offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" 
 		id="sentEOBSuccess" tabindex="-1" role="dialog" 
 			aria-labelledby="myModalLabel" aria-hidden="true">
 		  <div class="modal-dialog" role="document">
@@ -67,7 +67,7 @@
 		    </div>
 		  </div>
 		</div>
-		<div class="modal fade  offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 " id="sendToHost" tabindex="-1" role="dialog" 
+		<div class="modal  offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 " id="sendToHost" tabindex="-1" role="dialog" 
 			aria-labelledby="myModalLabel" aria-hidden="true">
 		  <div class="modal-dialog" role="document">
 		    <div class="modal-content">
@@ -81,11 +81,11 @@
 		    </div>
 		  </div>
 		</div>
-		<div id="spinner" class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+		<div id="spinner" class="modal offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
 		  <div class="modal-dialog modal-sm">
 		    <div class="modal-content">
-		      <span><img src="css/box.gif" class="rounded mx-auto d-block"></span>
-		    </div>
+				<div><span><img src="css/box.gif" class="rounded mx-auto d-block"></span></div>
+				<div><p style="text-align:center;font-weight:bold" id="spinnerMessage"></p></div>		    </div>
 		  </div>
 		</div>		
 	</div>
@@ -186,7 +186,7 @@
 					  <td>{{nonCovAmount}}</td>
 					</tr>
 					<tr>
-					  <th scope="row">Approved Amount</th>
+					  <th scope="row">Allowed Amount</th>
 					  <td>{{approvedAmount}}</td>
 					</tr>
 					<tr>
@@ -198,27 +198,26 @@
 					  <td>{{remotePlanCode}}</td>
 					</tr>
 					<tr>
-					  <th scope="row">Cost Share</th>
-					  <td>{{costShare}}</td>
-					</tr>
-					<tr>
 					  <th scope="row">Adjustment Flag</th>
 					  <td>{{adjustmentFlag}}</td>
 					</tr>
 					<tr>
-					  <th scope="row">Final Approved Amount</th>
+					  <th scope="row">Approved Payment Amount</th>
 					  <td class="has-danger" id="finalApprovedAmount">{{finalApprovedAmount}}</td>
 					</tr>
 					<tr>
-					  <th scope="row">Payment Method</th>
-					  <td>{{paymentMethod}}</td>
+					  <th scope="row">Cost Share</th>
+					  <td id="costShare">--</td>
 					</tr>
+					<tr>
+					  <th scope="row">Patient Liability</th>
+					  <td id="paitentLiability">0.0</td>
+					</tr>
+
 				  </tbody>
 				</table>		
 				<div class="col-xs-12 col-md-12 col-lg-12">			
-				<button style="margin-top: 10px;" class="col-xs-12 offset-md-1 col-md-4 offset-lg-1 col-lg-4  btn btn-primary" onClick="adjudicate('{{claimId}}')" >Adjudicate</button>
-				<button style="margin-top: 10px;" class="col-xs-12 offset-md-2 col-md-4 offset-lg-2 col-lg-4  btn btn-info" onClick="generateEOB('{{claimId}}')" >Generate EOB</button>
-				<button style="margin-top: 10px;" class="col-xs-12 offset-md-1 col-md-4 offset-lg-1 col-lg-4  btn btn-warning" onClick="updateClaim('{{claimId}}','HOME_SENT_TO_HOST')">Approve &amp; send to host</button>
+				<button style="margin-top: 10px;" class="col-xs-12 offset-md-1 col-md-4 offset-lg-1 col-lg-4  btn btn-primary" onClick="adjudicate('{{claimId}}')" >Adjudicate and send to host</button>
 				<a style="margin-top: 10px;" class="col-xs-12 offset-md-2 col-md-4 offset-lg-2 col-lg-4 btn btn btn-info" href="loadHomeUserHome.wss?seed={{seed}}" >Cancel</a>
 				</div>
 			  </div>
@@ -269,25 +268,35 @@
 	<script type="text/javascript" >
 	function generateEOB(claimId)
 	{		
-			showSpinner();
 			$.ajax({
 					type: 'POST',
 					url:  'generateEOB.wss',
 					data: { 'claimId': claimId }
 					 })
 					.done( function (responseText) {
+					  hideSpinner();
 					   // Triggered if response status code is 200 (OK)
 					   console.log('Response received:' + responseText);
-					   //show the success modal
-					   $('#sentEOBSuccess').modal({'show':true});
+					   var response = eval("("+responseText+")");
+					   var claim = response.result;
+					   if(claim!=null)
+					   {
+					   		window.setTimeout(updateClaim(claim.claimId,'HOME_SENT_TO_HOST'),3000);
+					   		showSpinner('Sending claim to host');
+					   }else
+					   {
+					   	 	alert("Generation of EOB failed");
+					   }
+					   
 					})
 					.fail( function (jqXHR, status, error) {
+					 	hideSpinner();
 					   alert('EOB generation failed');
 					})
 					.always( function() {
 					   // Always run after .done() or .fail()
 					   console.log("May be stop displaying in progress dialog");
-					   hideSpinner();
+					  
 					});
 	}
 	</script>
@@ -295,13 +304,14 @@
 	<script type="text/javascript" >
 	function adjudicate(claimId)
 		{		
-			showSpinner();
+			showSpinner('Performing claim adjudication');
 			$.ajax({
 					type: 'POST',
 					url:  'adjudicateClaimByHome.wss',
 					data: { 'claimId': claimId }
 					 })
 					.done( function (responseText) {
+					   hideSpinner();
 					   // Triggered if response status code is 200 (OK)
 					   console.log('Response received:' + responseText);
 					   //show the success modal
@@ -311,23 +321,32 @@
 					   {
 					   		console.log("Final approved amount "+ claim.finalApprovedAmount);
 					   		$('#finalApprovedAmount').text(claim.finalApprovedAmount);
+					   		$('#costShare').text(claim.costShare);
+					   		$('#paitentLiability').text(claim.paitentLiability);
+					   		window.setTimeout(generateEOB(claim.claimId),3000);
+					   		showSpinner('Generating EOB and sending to member');
 					   }
-					   $('#adjudgateSuccess').modal({'show':true});
+					   else
+					   {
+					   		alert("Claim adjugation failed");
+					   }
+					   
 					})
 					.fail( function (jqXHR, status, error) {
+					   hideSpinner();
 					   alert('Claim adjudication failed');
 					})
 					.always( function() {
 					   // Always run after .done() or .fail()
 					   console.log("May be stop displaying in progress dialog");
-					   hideSpinner();
+					 
 					});
 		}
 	</script>
 	
 	<script type="text/javascript" >
 		function updateClaim(claimId,status)
-		{		showSpinner();
+		{		
 				$.ajax({
 					type: 'POST',
 					url:  'updateClaimStatusHome.wss',

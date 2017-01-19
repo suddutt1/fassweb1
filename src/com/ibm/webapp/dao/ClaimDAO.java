@@ -4,29 +4,25 @@ import static com.ibm.webapp.action.ApplicationConstants.CLAIM_OWNER_HOME;
 import static com.ibm.webapp.action.ApplicationConstants.CLAIM_OWNER_HOST;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bson.Document;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.ibm.utils.MongoHelper;
 import com.ibm.utils.PropertyManager;
 import com.ibm.webapp.bean.BenefitSnapShot;
 import com.ibm.webapp.bean.ClaimDetails;
 import com.ibm.webapp.bean.ClaimStatus;
 import com.ibm.webapp.bean.EOBHeader;
-import com.ibm.webapp.mockdata.MockDataHelper;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.result.UpdateResult;
 
 public class ClaimDAO {
 
-	private static final String _RECORD_COLLECTION_NAME = "temp4";
+	private static final String _RECORD_COLLECTION_NAME = "temp6";
 	private static final Logger _LOGGER = Logger.getLogger(ClaimDAO.class
 			.getName());
 

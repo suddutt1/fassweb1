@@ -100,6 +100,17 @@ public class HyperledgerClient {
 						hlResponse.setMessage((String) resultDetails
 								.get("message"));
 
+					}else if(result.containsKey("error")){
+						Map<String, Object> resultDetails = (Map<String, Object>) result
+								.get("error");
+						hlResponse = new HyperLedgerResponse(false);
+						hlResponse.setMessage((String) resultDetails
+								.get("message")+" "+(String) resultDetails
+								.get("data"));
+					}else
+					{
+						hlResponse = new HyperLedgerResponse(false);
+						hlResponse.setMessage("Unknown response");
 					}
 				} else {
 					hlResponse = new HyperLedgerResponse(false);

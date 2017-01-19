@@ -5,6 +5,7 @@ public class HyperLedgerResponse {
 	private boolean ok;
 	private String chainCode;
 	private String message;
+	
 
 	public HyperLedgerResponse(boolean ok) {
 		super();

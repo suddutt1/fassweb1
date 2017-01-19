@@ -1,5 +1,5 @@
 function getLastActionResponse(successCallBack,errorCallBack)
-{	showSpinner();
+{	showSpinner('Loading data');
 	$.ajax({
         type: 'POST',
         url:  '_get_last_model_data.wss',
@@ -22,10 +22,15 @@ function getLastActionResponse(successCallBack,errorCallBack)
 }
 
 
-function showSpinner()
+function showSpinner(message)
 {
+	if(message!=null)
+	{
+		$('#spinnerMessage').text(message);
+	}
 	$('#spinner').modal('show');
 }
+
 function hideSpinner()
 {
 	$('#spinner').modal('hide');

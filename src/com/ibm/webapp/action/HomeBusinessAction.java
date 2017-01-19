@@ -101,7 +101,7 @@ public class HomeBusinessAction implements WebActionHandler {
 				HyperLedgerResponse resp = ClaimHLDAO
 						.adjudicateClaim(claimId,
 								claimDetails.getFinalApprovedAmount(), "F2312",
-								"L2034");
+								"L2034",claimDetails.getPaitentLiability(),claimDetails.getCostShare());
 				if (resp.isOk()) {
 					actionResponse = new ActionResponse(ACTION_SUCESS,
 							claimDetails);
@@ -149,11 +149,17 @@ public class HomeBusinessAction implements WebActionHandler {
 	}
 
 	private void adjudicate(ClaimDetails claimDetails) {
-		int chargedAmt = getAmount(claimDetails.getChargedAmount());
+		int approvedAmt = getAmount(claimDetails.getApprovedAmount());
 		int nonCovAmt = getAmount(claimDetails.getNonCovAmount());
-		int finalApprovedAmt = chargedAmt - nonCovAmt;
+		int percentage = ((System.currentTimeMillis() % 2) == 0 ? 20 : 40);
+
+		int finalApprovedAmt = (int) ((approvedAmt - nonCovAmt) * 1.0
+				* percentage / 100);
 		claimDetails.setFinalApprovedAmount(String.valueOf(finalApprovedAmt)
 				+ ".00");
+		claimDetails.setCostShare(String.valueOf(100 - percentage) + ":"
+				+ String.valueOf(percentage));
+		claimDetails.setPaitentLiability(String.valueOf(approvedAmt-finalApprovedAmt)+".00");
 
 	}
 

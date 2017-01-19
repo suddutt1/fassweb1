@@ -40,10 +40,11 @@
 			<p class="lead">View and share claim details to shared ledger</p>
 			<div style="height:400px;" id="claimDetails"></div>
 		</div>
-		<div id="spinner" class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+		<div id="spinner" class="modal offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
 		  <div class="modal-dialog modal-sm">
 		    <div class="modal-content">
-		      <span><img src="css/box.gif" class="rounded mx-auto d-block"></span>
+		      <div><span><img src="css/box.gif" class="rounded mx-auto d-block"></span></div>
+		      <div><p style="text-align:center;font-weight:bold" id="spinnerMessage"></p></div>
 		    </div>
 		  </div>
 		</div>
@@ -180,10 +181,6 @@
 					  <td>{{remotePlanCode}}</td>
 					</tr>
 					<tr>
-					  <th scope="row">Cost Share</th>
-					  <td>{{costShare}}</td>
-					</tr>
-					<tr>
 					  <th scope="row">Adjustment Flag</th>
 					  <td>{{adjustmentFlag}}</td>
 					</tr>
@@ -194,8 +191,7 @@
 
 					</tbody>
 					</table>		
-				<button class="btn btn-primary" id="sendToHLBtn" onClick="initiateClaimProcess('{{claimId}}')">Save to HyperLedger</button>
-				<button class="btn btn-warning" id="sendToHostBtn" onClick="updateClaim('{{claimId}}','PROVIDER_SENT_TO_HOST')" >Initiate claim process</button>
+				<button class="btn btn-warning" id="sendToHostBtn" onClick="initiateClaimProcess('{{claimId}}')" >Initiate claim process</button>
 				<a href="loadProvideHome.wss" class="btn btn-info">Cancel</a>
 			  	
 				</div>
@@ -207,9 +203,7 @@
 					
 					console.log('Provider claim details page loaded');
 					//Add the modal action handlers
-					$('#saveSucessToBC').on('hidden.bs.modal', function (e) {
-  						$("#goBackFrm").submit();
-					});
+					
 					$('#sendToHost').on('hidden.bs.modal', function (e) {
   						$("#goBackFrm").submit();
 					});
@@ -247,7 +241,7 @@
 	</script>
 	<script type="text/javascript" >
 		function updateClaim(claimId,status)
-		{		showSpinner();
+		{		showSpinner('Initiating Claim Process');
 				$.ajax({
 					type: 'POST',
 					url:  'updateClaimStatusProvider.wss',
@@ -272,7 +266,7 @@
 	</script>
 	<script type="text/javascript" >
 		function initiateClaimProcess(claimId)
-		{		showSpinner();
+		{		showSpinner('Saving to HyperLedger');
 				$.ajax({
 					type: 'POST',
 					url:  'saveClaimToHyperLedger.wss',
@@ -281,8 +275,8 @@
 					.done( function (responseText) {
 					   // Triggered if response status code is 200 (OK)
 					   console.log('Response received:' + responseText);
-					   //show the success modal
-					   $('#saveSucessToBC').modal({'show':true});
+					   //Update the claim
+					   window.setTimeout(updateClaim(claimId,'PROVIDER_SENT_TO_HOST'),3000);
 					})
 					.fail( function (jqXHR, status, error) {
 					   alert('Claim process initiation failed');
