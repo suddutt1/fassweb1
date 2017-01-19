@@ -121,7 +121,7 @@ table#detailTable , td {
 	<div style="display:inline-block;width:100%" id="details">
 	<table style="text-align:center;table-layout:fixed" id="#detailTable">
 		<tr>
-			<td>DATE(S) OF SERVECE</td>
+			<td>DATE(S) OF SERVICE</td>
 			<td>CODES</td>
 			<td>TYPE OF SERVICE</td>
 			<td>CHARGE</td>
@@ -139,11 +139,11 @@ table#detailTable , td {
 			<td><c:out value="${claim.diagCode}"/></td>
 			<td><c:out value="${claim.procedureCode}"/></td>
 			<td><c:out value="${claim.chargedAmount}"/></td>
-			<td>0.0</td>
+			<td><c:out value="${claim.approvedAmount}"/></td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
-			<td><c:out value="${claim.nonCovAmount}"/></td>
 			<td>&nbsp;</td>
+			<td><c:out value="${claim.paitentLiability}"/></td>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
 			<td><c:out value="${claim.finalApprovedAmount}"/></td>

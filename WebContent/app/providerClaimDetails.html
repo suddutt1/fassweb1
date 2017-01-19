@@ -48,7 +48,7 @@
 		    </div>
 		  </div>
 		</div>
-		<div class="modal fade" id="saveSucessToBC" tabindex="-1" role="dialog" 
+		<div class="modal " id="saveSucessToBC" tabindex="-1" role="dialog" 
 			aria-labelledby="myModalLabel" aria-hidden="true">
 		  <div class="modal-dialog" role="document">
 		    <div class="modal-content">
@@ -61,7 +61,7 @@
 		    </div>
 		  </div>
 		</div>
-		<div class="modal fade" id="sendToHost" tabindex="-1" role="dialog" 
+		<div class="modal" id="sendToHost" tabindex="-1" role="dialog" 
 			aria-labelledby="myModalLabel" aria-hidden="true">
 		  <div class="modal-dialog" role="document">
 		    <div class="modal-content">
@@ -241,7 +241,7 @@
 	</script>
 	<script type="text/javascript" >
 		function updateClaim(claimId,status)
-		{		showSpinner('Initiating Claim Process');
+		{		
 				$.ajax({
 					type: 'POST',
 					url:  'updateClaimStatusProvider.wss',
@@ -276,15 +276,18 @@
 					   // Triggered if response status code is 200 (OK)
 					   console.log('Response received:' + responseText);
 					   //Update the claim
+					   hideSpinner();
 					   window.setTimeout(updateClaim(claimId,'PROVIDER_SENT_TO_HOST'),3000);
+					   showSpinner('Initiating Claim Process');
 					})
 					.fail( function (jqXHR, status, error) {
+					   hideSpinner();
 					   alert('Claim process initiation failed');
 					})
 					.always( function() {
 					   // Always run after .done() or .fail()
 					   console.log("May be stop displaying in progress dialog");
-					   hideSpinner();
+					  
 					});
 		}
 	</script>
