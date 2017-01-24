@@ -21,7 +21,7 @@
 			aria-label="Toggle navigation"></button>
 		<div class="collapse navbar-toggleable-xs" id="navbar-header">
 			<ul class="nav navbar-nav float-xs-right">
-				<li class="nav-item active"><a class="nav-link" href="#">Home</a></li>
+				<li class="nav-item active"><a class="nav-link" href="#">Welcome Screen</a></li>
 				<li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
 				<li class="nav-item"><a class="nav-link" href="weatherhome.wss">Administration</a>
 				</li>
@@ -35,7 +35,7 @@
 	</nav>
 	<!-- /navbar -->
 	<div class="container-fluid">
-		<div class="jumbotron" >
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 canvas" >
 			<h3 class="display-5">Claim details</h3>
 			<p class="lead">Save or send claim details to home</p>
 			<div style="height:400px;" id="claimDetails"></div>
@@ -165,9 +165,11 @@
 					</tr>
 				</tbody>
 				</table>
-				<button class="btn btn-warning" onClick="calculatePrice('{{claimId}}')">Send to home</button>
-				<a href="loadClaims.wss?status=PROVIDER_SENT_TO_HOST&seed={{seed}}" class="btn btn-info">Cancel</a>
-			  </div>
+				<div class="col-xs-12 col-md-12 col-lg-12">	
+					<button style="margin-top: 10px;" class="col-xs-12 col-md-12 offset-lg-2 col-lg-8 btn btn-warning" onClick="calculatePrice('{{claimId}}')">Calculate Pricing and Send to Home</button>
+					<a style="margin-top: 10px;" class="col-xs-12 col-md-12 offset-lg-2 col-lg-8 btn btn-info" href="loadClaims.wss?status=PROVIDER_SENT_TO_HOST&seed={{seed}}" >Cancel</a>
+			  	</div>
+				</div>
 			</div>
 	</script>
 	<script type="text/javascript">

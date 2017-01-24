@@ -100,8 +100,8 @@ public class HomeBusinessAction implements WebActionHandler {
 			if (ClaimDAO.updateClaim(claimDetails)) {
 				HyperLedgerResponse resp = ClaimHLDAO
 						.adjudicateClaim(claimId,
-								claimDetails.getFinalApprovedAmount(), "F2312",
-								"L2034",claimDetails.getPaitentLiability(),claimDetails.getCostShare());
+								claimDetails.getFinalApprovedAmount(), "455",
+								"060",claimDetails.getPaitentLiability(),claimDetails.getCostShare());
 				if (resp.isOk()) {
 					actionResponse = new ActionResponse(ACTION_SUCESS,
 							claimDetails);

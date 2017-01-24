@@ -21,7 +21,7 @@
 			aria-label="Toggle navigation"></button>
 		<div class="collapse navbar-toggleable-xs" id="navbar-header">
 			<ul class="nav navbar-nav float-xs-right">
-				<li class="nav-item active"><a class="nav-link" href="#">Home</a></li>
+				<li class="nav-item active"><a class="nav-link" href="#">Welcome Screen</a></li>
 				<li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
 				<li class="nav-item"><a class="nav-link" href="weatherhome.wss">Administration</a>
 				</li>
@@ -36,11 +36,11 @@
 	<!-- /navbar -->
 	<div class="container-fluid">
 		<div class="jumbotron">
-			<h3 class="display-5">Host entity home </h3>
+			<h3 class="display-5">Welcome </h3>
 			<p class="lead">Click on the appropriate buttons to process claims</p>
 			<div class="list-group" id="actionList">
-				<a href="loadClaims.wss?status=PROVIDER_SENT_TO_HOST" class="list-group-item list-group-item-action list-group-item-info" >Process claims from providers</a>
-				<a href="loadClaims.wss?status=HOME_SENT_TO_HOST" data-target="#" class="list-group-item list-group-item-action list-group-item-danger " >Process claims from Home entity</a>
+				<a href="loadClaims.wss?status=PROVIDER_SENT_TO_HOST" class="list-group-item list-group-item-action list-group-item-info" >Process claims from Providers</a>
+				<a href="loadClaims.wss?status=HOME_SENT_TO_HOST" data-target="#" class="list-group-item list-group-item-action list-group-item-danger " >Process claims from Home</a>
 			</div>
 		</div>
 		<div id="spinner" class="modal fade offset-xs-3 offset-sm-3 offset-md-3 offset-lg-3 offset-xl-3 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">

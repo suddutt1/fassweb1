@@ -22,7 +22,7 @@ import com.mongodb.client.result.UpdateResult;
 
 public class ClaimDAO {
 
-	private static final String _RECORD_COLLECTION_NAME = "temp7";
+	private static final String _RECORD_COLLECTION_NAME = "temp9";
 	private static final Logger _LOGGER = Logger.getLogger(ClaimDAO.class
 			.getName());
 
