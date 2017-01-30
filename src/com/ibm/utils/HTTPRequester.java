@@ -104,4 +104,51 @@ public class HTTPRequester {
 		return response;
 	}
 
+	/**
+	 * Performs a HTTP GET Request
+	 * 
+	 * @param url
+	 *            URL to hit
+	 * @param getNameValuePairs
+	 *            List of name value pars in JSON map
+	 * @param header
+	 *            Header values
+	 * @return HTTPResponse
+	 */
+	public static HTTPResponse sendGetRequest(String url,
+			Map<String, String> getNameValuePairs, Map<String, String> header) {
+		HTTPResponse response = null;
+		StringBuffer responseContent = new StringBuffer();
+		try {
+			// TODO: Convert the name value pair map to URL encodes and append
+			// to the url after a ? sign
+			HttpsURLConnection con = (HttpsURLConnection) (new URL(url))
+					.openConnection();
+			// TODO:Add request header
+			con.setRequestMethod("GET");
+			con.setRequestProperty("User-Agent", USER_AGENT);
+			int responseCode = con.getResponseCode();
+			_LOGGER.fine("\nSending 'GET' request to URL : " + url);
+			_LOGGER.fine("Get parameters : " + getNameValuePairs);
+			_LOGGER.fine("Response Code : " + responseCode);
+			if (responseCode == 200) {
+				BufferedReader in = new BufferedReader(new InputStreamReader(
+						con.getInputStream()));
+				String inputLine;
+				while ((inputLine = in.readLine()) != null) {
+					responseContent.append(inputLine);
+				}
+				in.close();
+				_LOGGER.fine(responseContent.toString());
+			}
+			response = new HTTPResponse(responseCode,
+					responseContent.toString());
+
+		} catch (Throwable th) {
+			_LOGGER.log(Level.WARNING, "Error thrown: ", th);
+			response = new HTTPResponse(HTTPResponse.CLIENT_SIDE_ERROR,
+					th.getMessage());
+		}
+		return response;
+	}
 }

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>FAAS HyperLedger Status Monitor</title>
+<!-- Required meta tags always come first -->
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body style="background-color:#ffffff">
+	<nav class="navbar navbar-dark bg-inverse navbar-full navbar-fixed-top">
+		<a class="navbar-brand" href="#"><img src="css/logo.png" width="30" height="30" alt="">&nbsp;<span class="app-title">FAAS APP ( Monitoring )</span></a>
+	<!-- /navbar -->
+	</nav>
+	<div class="container-fluid">
+		<div class="jumbotron" style="text-align:center">
+			<h3 class="display-5">FAAS Application Hyperledger Transaction Monitoring Interface</h3>
+			<p class="lead">Watch Hyperledger Transaction at real time in the panels below </p>
+			<button class="btn-danger" onclick="reloadStat()">Reload Statistics</button>
+			<div id="statContent" style="height: 150px;overflow:auto;" >
+			<div id="stat"></div>
+		</div>
+		</div>
+		<div id="trasactionContent" style="height: 400px;overflow:auto;">
+			<div id="logs"></div>
+		</div>
+	</div>
+
+	<!-- jQuery first, then Tether, then Bootstrap JS. -->
+	<script src="js/jquery-3.1.1.min.js"></script>
+	<script src="js/tether.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/mustache.js"></script>
+	<script id="chainInfo" type="x-tmpl-mustache">
+		<p class="large">
+			<strong>Blockchain Height:</strong>&nbsp;<span class="tag tag-primary">{{height}}</span><br/>
+			<strong>Current Block Hash:</strong>&nbsp;<kbd>{{currentBlockHash}}</kbd><br/>
+			<strong>Previous Block Hash</strong>&nbsp;<span class="tag tag-info">{{previousBlockHash}}</span><br/>
+		</p>
+	</script>
+	<script id="claimDetailsTemplate" type="x-tmpl-mustache">
+		<div style="background-color:#ecf2f9;border:1px solid;">
+			<p>{{ts}}</p>
+			<p>{{content}}</p>
+		</div>
+	</script>
+	<script type="text/javascript">
+	var wsocket;
+	var statURL;
+	
+	function  onMessage(event){
+		console.log(event.data);
+		var response  = eval("("+event.data+")");
+		var output = event.data;
+		if(response.result!=null)
+		{
+			output=response.result;
+		}
+		var dt = new Date();
+		//var randSeed = dt.getTime();
+		var claimDetailTemplate = $("#claimDetailsTemplate").html();
+		Mustache.parse(claimDetailTemplate);
+		$("#logs").prepend(Mustache.render(claimDetailTemplate,{'content':output,'ts':dt}));
+		reloadStat();
+	}  
+	$(document).ready(function(){
+		
+		console.log("View Status Page is loaded.")
+		var fullHref = window.location.href;
+		var urlWithProto = fullHref.replace('viewstat.html','asyncmessage');
+		var proto = window.location.protocol;
+		var url = urlWithProto.replace(proto,"ws:");
+		console.log("URL to invoke for socket: "+ url);
+		statURL = fullHref.replace('viewstat.html','viewHLStat.wss');
+		wsocket = new WebSocket(url);       
+        wsocket.onmessage = onMessage; 
+        reloadStat();
+	});
+	
+	function reloadStat()
+	{		
+		$.ajax({
+			type: 'POST',
+			url:  'viewHLStat.wss',
+			 })
+			.done( function (responseText) {
+			   console.log('Response received:' + responseText);
+			   var res = eval("("+responseText+")");
+			   var chainTemplate = $("#chainInfo").html();
+			   Mustache.parse(chainTemplate);
+				$("#stat").html(Mustache.render(chainTemplate,eval("("+res.result+")")));
+			})
+			.fail( function (jqXHR, status, error) {
+			})
+			.always( function() {
+			   console.log("May be stop displaying in progress dialog");
+			});
+	}
+	
+	</script>
+</body>
+</html>

@@ -8,7 +8,9 @@ import java.util.logging.Logger;
 import com.ibm.hyperledger.client.HyperLedgerRequest;
 import com.ibm.hyperledger.client.HyperLedgerResponse;
 import com.ibm.hyperledger.client.HyperledgerClient;
+import com.ibm.utils.CommonUtil;
 import com.ibm.utils.PropertyManager;
+import com.ibm.webapp.action.AsyncMessageHanlder;
 import com.ibm.webapp.bean.ClaimDetails;
 
 import static com.ibm.webapp.action.ApplicationConstants.*;
@@ -50,6 +52,7 @@ public class ClaimHLDAO {
 			if (client.register()) {
 				HyperLedgerRequest claimRequest = createQueryRequest(claimId,
 						getUserId(CLAIM_OWNER_PROVIER));
+				
 				response = client.invokeMethod(claimRequest);
 			} else {
 				response = new HyperLedgerResponse(false);
@@ -168,6 +171,24 @@ public class ClaimHLDAO {
 			_LOGGER.log(Level.WARNING, "HL calculatePricing failed with ", ex);
 			response = new HyperLedgerResponse(false);
 			response.setMessage("Exception in initializing the claim process:"
+					+ ex.getMessage());
+		}
+		return response;
+	}
+	public static HyperLedgerResponse getStatistics(String chainHash) {
+		HyperLedgerResponse response = null;
+		try {
+			HyperledgerClient client = getClient(CLAIM_OWNER_HOST);
+			if (client.register()) {
+				response = client.getStat();
+			} else {
+				response = new HyperLedgerResponse(false);
+				response.setMessage("Registration failed");
+			}
+		} catch (Exception ex) {
+			_LOGGER.log(Level.WARNING, "HL get Status Failed ", ex);
+			response = new HyperLedgerResponse(false);
+			response.setMessage("Exception in getting the status:"
 					+ ex.getMessage());
 		}
 		return response;
@@ -307,4 +328,5 @@ public class ClaimHLDAO {
 
 		}
 	}
+
 }

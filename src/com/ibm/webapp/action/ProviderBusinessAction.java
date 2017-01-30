@@ -24,6 +24,7 @@ import com.ibm.webapp.hldao.ClaimHLDAO;
  */
 public class ProviderBusinessAction implements WebActionHandler {
 
+	
 	@RequestMapping("loadProvideHome.wss")
 	public ModelAndView loadProvideHome(HttpServletRequest request,
 			HttpServletResponse response) {

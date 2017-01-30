@@ -9,8 +9,10 @@ import java.util.logging.Logger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.GsonBuilder;
+import com.ibm.utils.CommonUtil;
 import com.ibm.utils.HTTPRequester;
 import com.ibm.utils.HTTPResponse;
+import com.ibm.webapp.action.AsyncMessageHanlder;
 
 public class HyperledgerClient {
 
@@ -18,6 +20,9 @@ public class HyperledgerClient {
 			.getLogger(HyperledgerClient.class.getName());
 	private static final String _HYPER_LEDGER_REGISTRATION = "/registrar";
 	private static final String _HYPER_LEDGER_CHAINCODE = "/chaincode";
+	private static final String _HYPER_LEDGER_CHAIN_STAT = "/chain";
+	private static final String _HYPER_LEDGER_BLOCK_DETAILS = "/chain/blocks";
+	
 
 	private static final Gson _GSON_SERIALIZER = new GsonBuilder()
 			.setPrettyPrinting().create();
@@ -74,16 +79,52 @@ public class HyperledgerClient {
 
 		return registered;
 	}
-
-	public HyperLedgerResponse invokeMethod(HyperLedgerRequest request) {
+	/**
+	 * Returns the statistics
+	 * @return HyperLedgerResponse
+	 */
+	public HyperLedgerResponse getStat()
+	{
 		HyperLedgerResponse hlResponse = null;
 		try {
 
 			if (register()) {
+				HTTPResponse response = HTTPRequester.sendGetRequest(
+						this.vpUrl + _HYPER_LEDGER_CHAIN_STAT, null, null);
+				if (response.isOk()) {
+					_LOGGER.info("Response " + response.getResult());
+					hlResponse = new HyperLedgerResponse(true);
+					hlResponse.setMessage(response.getResult());
+				} else {
+					hlResponse = new HyperLedgerResponse(false);
+					hlResponse.setMessage("Unable to retrieved...");
+				}
+			}
+			else
+			{
+				hlResponse = new HyperLedgerResponse(false);
+				hlResponse.setMessage("Not registered");
+			}
+
+		} catch (Exception ex) {
+			_LOGGER.log(Level.WARNING,
+					"Failed to invoke with vp " + this.vpUrl, ex);
+			hlResponse = new HyperLedgerResponse(false);
+			hlResponse.setMessage("Exception thrown");
+		}
+		return hlResponse;
+	}
+
+	public HyperLedgerResponse invokeMethod(HyperLedgerRequest request) {
+		HyperLedgerResponse hlResponse = null;
+		try {
+			if (register()) {
 				String postBody = request.buildRequest();
 				_LOGGER.info("Sending postBody " + postBody);
+				sendMessage(postBody);
 				HTTPResponse response = HTTPRequester.sendPostRequest(
 						this.vpUrl + _HYPER_LEDGER_CHAINCODE, postBody, null);
+				sendMessage(response);
 				if (response.isOk()) {
 					_LOGGER.info("Response " + response.getResult());
 					Map<String, Object> result = _GSON_SERIALIZER.fromJson(
@@ -171,5 +212,17 @@ public class HyperledgerClient {
 		}
 		return hlResponse;
 
+	}
+	private static void sendMessage(Object message)
+	{
+		if(message instanceof String)
+		{
+			AsyncMessageHanlder.sendMessage((String)message);
+		}
+		else{
+			AsyncMessageHanlder.sendMessage(CommonUtil.toJson(message));
+		}
+			
+		
 	}
 }

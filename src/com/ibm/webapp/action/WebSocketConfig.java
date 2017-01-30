@@ -13,6 +13,7 @@ public class WebSocketConfig implements ServerApplicationConfig {
 	public Set<Class<?>> getAnnotatedEndpointClasses(Set<Class<?>> arg0) {
 		Set<Class<?>> s = new HashSet<Class<?>>();
         s.add(PushnotificationHanlder.class);
+        s.add(AsyncMessageHanlder.class);
 		return s;
 	}
 

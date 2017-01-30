@@ -17,6 +17,13 @@ public class ActionResponse {
 		this.status = stat;
 		this.result = rslt;
 	}
+	public ActionResponse(int stat,Object rslt,String errorMessage)
+	{
+		this.timeStamp = System.currentTimeMillis();
+		this.status = stat;
+		this.result = rslt;
+		this.actionError = errorMessage;
+	}
 	/**
 	 * @param stat
 	 * @param actionError

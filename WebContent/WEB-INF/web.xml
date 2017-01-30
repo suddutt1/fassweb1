@@ -47,7 +47,7 @@
 		<init-param>
 			<description>Action paths to bypass any authentication.Should be comma separated </description>
 			<param-name>bypassLoginActions</param-name>
-			<param-value>_get_last_model_data.wss,viewEOB.wss</param-value>
+			<param-value>_get_last_model_data.wss,viewEOB.wss,viewHLStat.wss</param-value>
 		</init-param>
 	</filter>
 	<filter-mapping>
